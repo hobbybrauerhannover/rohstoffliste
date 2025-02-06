@@ -8,7 +8,7 @@
         function toggleProducts(category) {
             document.querySelectorAll('.category').forEach(btn => btn.classList.remove('active'));
             document.querySelectorAll('.products').forEach(div => div.style.display = 'none');
-            let activeCategory = document.querySelector();
+            let activeCategory = document.querySelector('.category[data-category=""]');
             if (activeCategory) activeCategory.classList.add('active');
             let productSection = document.getElementById(category);
             if (productSection) productSection.style.display = "grid";
@@ -17,7 +17,7 @@
 </head>
 <body>
     <h1>Rohstofflager</h1>
-    <p>Aktualisiert: 06.02.2025 14:15</p>
+    <p>Aktualisiert: 06.02.2025 14:17</p>
     <div class="grid">
         <div class="category" data-category="Hopfen" onclick="toggleProducts("Hopfen")" >Hopfen</div>
 <div class="category" data-category="Malz" onclick="toggleProducts("Malz")" >Malz</div>
