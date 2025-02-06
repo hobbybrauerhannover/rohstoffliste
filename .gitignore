@@ -1,5 +1,5 @@
 # Alles ignorieren
 *
 
-# Ausnahme für .sh-Dateien
+# Ausnahme für .html-Dateien
 !*.html
