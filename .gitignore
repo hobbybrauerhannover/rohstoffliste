@@ -2,4 +2,4 @@
 *
 
 # Ausnahme für .sh-Dateien
-!*.sh
+!*.html
