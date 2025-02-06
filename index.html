@@ -9,10 +9,16 @@
             document.querySelectorAll(".category").forEach(btn => {
                 btn.addEventListener("click", function() {
                     let category = this.dataset.category;
+                    console.log("Kategorie geklickt:", category);
                     document.querySelectorAll(".category").forEach(btn => btn.classList.remove("active"));
                     document.querySelectorAll(".products").forEach(div => div.style.display = "none");
                     this.classList.add("active");
-                    document.getElementById(category).style.display = "grid";
+                    let productSection = document.getElementById(category);
+                    if (productSection) {
+                        productSection.style.display = "grid";
+                    } else {
+                        console.warn("Kein Element mit ID gefunden:", category);
+                    }
                 });
             });
         });
@@ -20,7 +26,7 @@
 </head>
 <body>
     <h1>Rohstofflager</h1>
-    <p>Aktualisiert: 06.02.2025 13:00</p>
+    <p>Aktualisiert: 06.02.2025 13:02</p>
     <div class="grid">
         <div class="category" data-category="Hopfen">Hopfen</div>
         <div class="category" data-category="Malz">Malz</div>
