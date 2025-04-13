@@ -5,205 +5,305 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Rohstofflager</title>
     <style>
-        /* Moderne Apple-inspirierte Stilisierung */
-        body { 
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
-            text-align: center;
-            margin: 0;
-            padding: 0;
-            background-color: #f5f5f7;
-            color: #1d1d1f;
+    /* Grundlegende Stilisierung */
+    body {
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+        text-align: center;
+        margin: 0;
+        padding: 0;
+        background-color: #f5f5f7;
+        color: #1d1d1f;
+    }
+
+    header {
+        background-color: rgba(255, 255, 255, 0.8);
+        backdrop-filter: blur(10px);
+        -webkit-backdrop-filter: blur(10px);
+        position: sticky;
+        top: 0;
+        padding: 15px 0;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+        z-index: 100;
+    }
+
+    .header-content {
+        max-width: 1200px;
+        margin: 0 auto;
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        padding: 0 20px;
+        position: relative;
+        justify-content: flex-start;
+    }
+
+    .logo {
+        height: 90px;
+        margin-right: 20px;
+    }
+
+    .title-container {
+        flex-grow: 1;
+        text-align: center;
+        margin-right: 90px;
+    }
+
+    h1 {
+        font-weight: 500;
+        margin: 0;
+    }
+
+    .timestamp {
+        color: #86868b;
+        font-size: 0.9em;
+        margin-top: 5px;
+    }
+
+    .container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 20px;
+    }
+
+    .grid {
+        display: flex;
+        justify-content: center;
+        gap: 15px;
+        flex-wrap: wrap;
+        margin: 30px auto;
+    }
+
+    .category {
+        background-color: #fff;
+        border: none;
+        padding: 12px 24px;
+        border-radius: 20px;
+        cursor: pointer;
+        font-size: 16px;
+        font-weight: 500;
+        color: #1d1d1f;
+        transition: all 0.3s ease;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+    }
+
+    .category:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        background-color: #f5f5f7;
+    }
+
+    .category.active {
+        background-color: #06c;
+        color: white;
+    }
+
+    .stats-container {
+        margin: 25px auto;
+        padding: 20px;
+        background-color: white;
+        border-radius: 15px;
+        max-width: 800px;
+        display: none;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+    }
+
+    .stats-container p {
+        font-weight: 500;
+        margin: 5px 0;
+        font-size: 16px;
+    }
+
+    /* Produktkacheln - einfacher Ansatz */
+    .products {
+        display: none;
+    }
+
+    .products.active {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, 250px);
+        gap: 25px;
+        margin: 30px auto;
+        padding: 0 20px;
+        max-width: 1100px;
+        justify-content: center;
+    }
+
+    /* Produktkarten selbst */
+    .product {
+        width: 250px;
+        height: 300px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: space-between;
+        background-color: white;
+        border-radius: 18px;
+        padding: 20px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
+        transition: all 0.3s ease;
+        position: relative;
+        overflow: hidden;
+        box-sizing: border-box;
+    }
+
+    .product:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+    }
+
+    /* Flip-Karten nur für Malz */
+    .product-flip {
+        width: 250px;
+        height: 300px;
+        position: relative;
+        perspective: 1000px; /* Gibt 3D-Effekt */
+        margin: 0;
+        cursor: pointer;
+    }
+
+    .product-flip-inner {
+        width: 100%;
+        height: 100%;
+        position: relative;
+        transition: transform 0.6s;
+        transform-style: preserve-3d;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
+        border-radius: 18px;
+    }
+
+    .product-flip:hover .product-flip-inner {
+        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+    }
+
+    .product-flip.flipped .product-flip-inner {
+        transform: rotateY(180deg);
+    }
+
+    .product-front, .product-back {
+        width: 100%;
+        height: 100%;
+        position: absolute;
+        backface-visibility: hidden;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: space-between;
+        background-color: white;
+        border-radius: 18px;
+        padding: 20px;
+        box-sizing: border-box;
+    }
+
+    .product-back {
+        transform: rotateY(180deg);
+        justify-content: center;
+        text-align: center;
+    }
+
+    .product-back h3 {
+        margin-bottom: 30px;
+        font-size: 18px;
+    }
+
+    .product-back .detail {
+        margin: 10px 0;
+        font-size: 16px;
+        font-weight: 500;
+    }
+
+    .product img, .product-front img {
+        max-width: 120px;
+        max-height: 120px;
+        transition: transform 0.3s ease;
+    }
+
+    .product:hover img, .product-flip:hover .product-front img {
+        transform: scale(1.05);
+    }
+
+    .product h3, .product-front h3 {
+        margin: 15px 0 10px;
+        font-weight: 500;
+        text-align: center;
+    }
+
+    .product p, .product-front p {
+        margin: 5px 0;
+        font-size: 14px;
+        color: #515154;
+    }
+
+    .price {
+        font-weight: 600;
+        color: #1d1d1f;
+        font-size: 16px;
+    }
+
+    .stock {
+        font-weight: 500;
+        color: #06c;
+    }
+
+    .auslaufend {
+        color: #ff3b30;
+        font-weight: 600;
+        position: absolute;
+        top: 10px;
+        right: 10px;
+        background-color: rgba(255, 59, 48, 0.1);
+        padding: 5px 10px;
+        border-radius: 10px;
+        font-size: 12px;
+    }
+
+    /* Styling für Produkte mit 0 Bestand */
+    .zero-stock {
+        opacity: 0.5;
+        filter: grayscale(0.7);
+    }
+
+    /* Styling für Produkte mit negativem Bestand */
+    .negative-stock {
+        opacity: 0.6;
+        filter: grayscale(0.6);
+    }
+
+    .negative-stock .stock {
+        color: #ff3b30 !important;
+        font-weight: 700 !important;
+        font-size: 16px !important;
+        text-shadow: 0px 0px 3px rgba(255, 255, 255, 0.8);
+    }
+
+    /* Responsive Design */
+    @media (max-width: 768px) {
+        .grid {
+            flex-direction: row;
+            overflow-x: auto;
+            padding: 10px 0;
+            justify-content: flex-start;
+        }
+
+        .product, .product-flip {
+            width: 200px;
+            height: 280px;
         }
         
-        header {
-            background-color: rgba(255, 255, 255, 0.8);
-            backdrop-filter: blur(10px);
-            -webkit-backdrop-filter: blur(10px);
-            position: sticky;
-            top: 0;
-            padding: 15px 0;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
-            z-index: 100;
+        .products.active {
+            grid-template-columns: repeat(auto-fill, 200px);
         }
-        
-        h1 {
-            font-weight: 500;
-            margin: 0;
+    }
+    
+    @media (max-width: 500px) {
+        .products.active {
+            grid-template-columns: 200px;
         }
-        
-        .timestamp {
-            color: #86868b;
-            font-size: 0.9em;
-            margin-top: 5px;
-        }
-        
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 20px;
-        }
-        
-        .grid { 
-            display: flex;
-            justify-content: center;
-            gap: 15px;
-            flex-wrap: wrap;
-            margin: 30px auto;
-        }
-        
-        .category {
-            background-color: #fff;
-            border: none;
-            padding: 12px 24px;
-            border-radius: 20px;
-            cursor: pointer;
-            font-size: 16px;
-            font-weight: 500;
-            color: #1d1d1f;
-            transition: all 0.3s ease;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
-        }
-        
-        .category:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-            background-color: #f5f5f7;
-        }
-        
-        .category.active {
-            background-color: #06c;
-            color: white;
-        }
-        
-        .stats-container {
-            margin: 25px auto;
-            padding: 20px;
-            background-color: white;
-            border-radius: 15px;
-            max-width: 800px;
-            display: none;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
-            animation: fadeIn 0.4s ease;
-        }
-        
-        .stats-container p {
-            font-weight: 500;
-            margin: 5px 0;
-            font-size: 16px;
-        }
-        
-        .products {
-            display: none;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 25px;
-            margin-top: 30px;
-            justify-content: center;
-            padding: 0 20px;
-        }
-        
-        /* Spezielle Regel für Kategorien mit wenigen Produkten */
-        .products.few-items {
-            display: flex !important; /* Überschreibt display:grid */
-            flex-wrap: wrap;
-            justify-content: center;
-        }
-        
-        .products.few-items .product {
-            flex: 0 0 250px;
-            margin: 12.5px; /* Exakter Abstand von 25px zwischen den Boxen */
-            box-sizing: border-box;
-        }
-        
-        .product {
-            width: 250px;
-            height: 300px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: space-between;
-            background-color: white;
-            border-radius: 18px;
-            padding: 20px;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
-            transition: all 0.3s ease;
-            position: relative;
-            overflow: hidden;
-        }
-        
-        .product:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
-        }
-        
-        .product img {
-            max-width: 120px;
-            max-height: 120px;
-            transition: transform 0.3s ease;
-        }
-        
-        .product:hover img {
-            transform: scale(1.05);
-        }
-        
-        .product h3 {
-            margin: 15px 0 10px;
-            font-weight: 500;
-        }
-        
-        .product p {
-            margin: 5px 0;
-            font-size: 14px;
-            color: #515154;
-        }
-        
-        .product .price {
-            font-weight: 600;
-            color: #1d1d1f;
-            font-size: 16px;
-        }
-        
-        .product .stock {
-            font-weight: 500;
-            color: #06c;
-        }
-        
-        .auslaufend {
-            color: #ff3b30;
-            font-weight: 600;
-            position: absolute;
-            top: 10px;
-            right: 10px;
-            background-color: rgba(255, 59, 48, 0.1);
-            padding: 5px 10px;
-            border-radius: 10px;
-            font-size: 12px;
-        }
-        
-        /* Animationen */
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-        
-        /* Responsive Design */
-        @media (max-width: 768px) {
-            .grid {
-                flex-direction: row;
-                overflow-x: auto;
-                padding: 10px 0;
-                justify-content: flex-start;
-            }
-            
-            .product {
-                width: 200px;
-                height: 280px;
-            }
-        }
+    }
     </style>
     <script>
-        // Produktdaten
-        const produktDaten = [
-            {kategorie:"Diverses", name:"6 Verkostungsgläser (nur nach Vorbestellung)", preis:"21,00 €", bild:"https://image.izettle.com/product/M2Y4MDBjYmUtNTVkNS0xMWU5LWI1OWItNTEwYTk5NjYzOTVh-YTQ1MDM1OTAtMDBjNi0xMWYwLTkyNWItZTM0OWRiYjNhN2Qw.jpeg", auslaufend:"", bestand:"0 Stück"},
+    // Produktdaten
+    const produktDaten = [
+        {kategorie:"Diverses", name:"6 Verkostungsgläser (nur nach Vorbestellung)", preis:"21,00 €", bild:"https://image.izettle.com/product/M2Y4MDBjYmUtNTVkNS0xMWU5LWI1OWItNTEwYTk5NjYzOTVh-YTQ1MDM1OTAtMDBjNi0xMWYwLTkyNWItZTM0OWRiYjNhN2Qw.jpeg", auslaufend:"", bestand:"0 Stück"},
 {kategorie:"Hopfen", name:"Amarillo", preis:"4,50 €", bild:"https://image.izettle.com/product/P4AMvlXVEem1m1EKmWY5Wg-X4YEylrTEemwKf6dJ86VSA.jpeg", auslaufend:"", bestand:"7 Päckchen"},
 {kategorie:"Hopfen", name:"Ariana", preis:"2,00 €", bild:"https://image.izettle.com/product/P4AMvlXVEem1m1EKmWY5Wg-h7Ifnyd_Ee2NoIuIjvosSQ.jpeg", auslaufend:"", bestand:"18 Päckchen"},
 {kategorie:"Malz", name:"Aromamalz (260-300 EBC)", preis:"1,10 €", bild:"https://image.izettle.com/product/P4AMvlXVEem1m1EKmWY5Wg-9gGg7FraEemT-c_MvfxbQw.jpeg", auslaufend:"", bestand:"16.44 kg"},
@@ -275,105 +375,118 @@
 {kategorie:"Malz", name:"Weizen dunkel (14-18 EBC)", preis:"1,10 €", bild:"https://image.izettle.com/product/P4AMvlXVEem1m1EKmWY5Wg-pFUexIx4Eeq1MyoqfbcrjA.png", auslaufend:"", bestand:"42.76 kg"},
 {kategorie:"Malz", name:"Weizen hell (3-5 EBC)", preis:"1,10 €", bild:"https://image.izettle.com/product/P4AMvlXVEem1m1EKmWY5Wg-JWFm1lrYEemGJ4WmoEIx3w.jpeg", auslaufend:"", bestand:"80.29 kg"},
 {kategorie:"Malz", name:"Wiener Malz (8-10 EBC)", preis:"1,10 €", bild:"https://image.izettle.com/product/P4AMvlXVEem1m1EKmWY5Wg-BPir6FrYEemgtmgVW4xSfQ.jpeg", auslaufend:"", bestand:"365.12 kg"},
-        ];
+    ];
+    
+    // Funktion zur Berechnung der Statistiken
+    function berechneStatistik(kategorie) {
+        let anzahlArtikel = 0;
+        let gesamtBestand = 0;
+        let gesamtWert = 0;
+        let einheit = "";
         
-        // Funktion zur Berechnung der Statistiken
-        function berechneStatistik(kategorie) {
-            let anzahlArtikel = 0;
-            let gesamtBestand = 0;
-            let gesamtWert = 0;
-            let einheit = "";
-            
-            produktDaten.forEach(produkt => {
-                if (produkt.kategorie === kategorie) {
-                    anzahlArtikel++;
-                    
-                    // Bestand parsen
-                    const bestandTeile = produkt.bestand.split(" ");
-                    const bestandMenge = parseFloat(bestandTeile[0]);
-                    einheit = bestandTeile[1]; // Einheit speichern
-                    gesamtBestand += bestandMenge;
-                    
-                    // Preis parsen
-                    let preisText = produkt.preis.replace("€", "").trim();
-                    preisText = preisText.replace(",", ".");
-                    const preis = parseFloat(preisText);
-                    
-                    // Wert berechnen
-                    const wert = preis * bestandMenge;
-                    gesamtWert += wert;
-                }
-            });
-            
-            // Statistik aktualisieren
-            const statsElement = document.getElementById('stats-' + kategorie);
-            
-            // Anpassung für den Bestand - keine Dezimalstellen bei ganzen Zahlen
-            let bestandAnzeige;
-            if (Number.isInteger(gesamtBestand)) {
-                bestandAnzeige = gesamtBestand;
+        produktDaten.forEach(produkt => {
+            if (produkt.kategorie === kategorie) {
+                anzahlArtikel++;
+                
+                // Bestand parsen
+                const bestandTeile = produkt.bestand.split(" ");
+                const bestandMenge = parseFloat(bestandTeile[0]);
+                einheit = bestandTeile[1]; // Einheit speichern
+                gesamtBestand += bestandMenge;
+                
+                // Preis parsen
+                let preisText = produkt.preis.replace("€", "").trim();
+                preisText = preisText.replace(",", ".");
+                const preis = parseFloat(preisText);
+                
+                // Wert berechnen
+                const wert = preis * bestandMenge;
+                gesamtWert += wert;
+            }
+        });
+        
+        // Statistik aktualisieren
+        const statsElement = document.getElementById('stats-' + kategorie);
+        
+        // Anpassung für den Bestand - keine Dezimalstellen bei ganzen Zahlen
+        let bestandAnzeige;
+        if (Number.isInteger(gesamtBestand) && kategorie !== 'Malz') {
+            bestandAnzeige = gesamtBestand;
+        } else {
+            // Bei Malz immer eine Nachkommastelle anzeigen
+            if (kategorie === 'Malz') {
+                bestandAnzeige = gesamtBestand.toFixed(1);
             } else {
                 bestandAnzeige = gesamtBestand.toFixed(2);
             }
-            
-            statsElement.innerHTML = '<p>Anzahl Artikel: ' + anzahlArtikel + 
-                                    ' | Gesamtbestand: ' + bestandAnzeige + ' ' + einheit + 
-                                    ' | Gesamtwert: ' + gesamtWert.toFixed(2) + ' €</p>';
-        }
-
-        function toggleProducts(category) {
-            // Alle Kategoriebuttons deaktivieren
-            document.querySelectorAll('.category').forEach(btn => btn.classList.remove('active'));
-            // Ausgewählten Kategoriebutton aktivieren
-            document.querySelector('[onclick="toggleProducts(\'' + category + '\')"]').classList.add('active');
-            
-            // Alle Produktcontainer ausblenden
-            document.querySelectorAll('.products').forEach(div => {
-                div.style.display = 'none';
-                div.classList.remove('few-items'); // Alle Klassen zurücksetzen
-            });
-            
-            // Zeige die Produkte der ausgewählten Kategorie
-            const productsContainer = document.getElementById(category);
-            
-            // Zuerst die Anzahl der Produkte zählen
-            const productCount = productsContainer.querySelectorAll('.product').length;
-            
-            // Dann die entsprechende Klasse und Display-Property setzen
-            if (productCount < 4) {
-                productsContainer.classList.add('few-items');
-                productsContainer.style.display = "flex"; // Für Flexbox
-            } else {
-                productsContainer.style.display = "grid"; // Für Grid
-            }
-            
-            // Zeige die Statistiken für die ausgewählte Kategorie an
-            document.querySelectorAll('.stats-container').forEach(div => div.style.display = 'none');
-            document.getElementById('stats-' + category).style.display = "block";
-            
-            // Berechne die Statistik für die ausgewählte Kategorie
-            berechneStatistik(category);
         }
         
-        // Kategorie Malz beim Laden automatisch aktivieren
-        window.onload = function() {
-            toggleProducts('Malz');
-        };
+        statsElement.innerHTML = '<p>Anzahl Artikel: ' + anzahlArtikel + 
+                                ' | Gesamtbestand: ' + bestandAnzeige + ' ' + einheit + 
+                                ' | Gesamtwert: ' + gesamtWert.toFixed(2) + ' €</p>';
+    }
+
+    // Funktion zum Umdrehen einer Karte
+    function flipCard(card) {
+        card.classList.toggle('flipped');
+        // Verhindern, dass das Ereignis zum Elternelement propagiert wird
+        event.stopPropagation();
+    }
+
+    function toggleProducts(category) {
+        // Alle Kategoriebuttons deaktivieren
+        document.querySelectorAll('.category').forEach(btn => btn.classList.remove('active'));
+        
+        // Ausgewählten Kategoriebutton aktivieren
+        document.querySelector('[onclick="toggleProducts(\'' + category + '\')"]').classList.add('active');
+        
+        // Alle Produktcontainer ausblenden
+        document.querySelectorAll('.products').forEach(div => {
+            div.classList.remove('active');
+        });
+        
+        // Zeige die Produkte der ausgewählten Kategorie
+        const productsContainer = document.getElementById(category);
+        productsContainer.classList.add('active');
+        
+        // Zeige die Statistiken für die ausgewählte Kategorie an
+        document.querySelectorAll('.stats-container').forEach(div => div.style.display = 'none');
+        document.getElementById('stats-' + category).style.display = "block";
+        
+        // Berechne die Statistik für die ausgewählte Kategorie
+        berechneStatistik(category);
+    }
+    
+    // Erste Kategorie beim Laden automatisch aktivieren
+    window.onload = function() {
+        // Ermittle die erste verfügbare Kategorie
+        const firstCategoryButton = document.querySelector('.category');
+        if (firstCategoryButton) {
+            const firstCategory = firstCategoryButton.textContent;
+            toggleProducts(firstCategory);
+        }
+    };
     </script>
 </head>
 <body>
     <header>
-        <h1>Rohstofflager - Hobbybrauer Hannover e.V.</h1>
-        <p class="timestamp">Aktualisiert: 13.04.2025 12:23</p>
+        <div class="header-content">
+            <img src="https://easyverein.com/app/image/full_17199194743824325.png" alt="Hobbybrauer Hannover Logo" class="logo">
+            <div class="title-container">
+                <h1>Rohstofflager - Hobbybrauer Hannover e.V.</h1>
+                <p class="timestamp">Aktualisiert: 13.04.2025 21:43</p>
+            </div>
+        </div>
     </header>
-    
+
     <div class="container">
         <div class="grid">
-            <div class="category" onclick="toggleProducts('Malz')">Malz</div>
-            <div class="category" onclick="toggleProducts('Hopfen')">Hopfen</div>
-            <div class="category" onclick="toggleProducts('Hefe')">Hefe</div>
-            <div class="category" onclick="toggleProducts('Verpackung')">Verpackung</div>
-            <div class="category" onclick="toggleProducts('Diverses')">Diverses</div>
+        <div class="category" onclick="toggleProducts('Malz')">Malz</div>
+        <div class="category" onclick="toggleProducts('Hopfen')">Hopfen</div>
+        <div class="category" onclick="toggleProducts('Hefe')">Hefe</div>
+        <div class="category" onclick="toggleProducts('Diverses')">Diverses</div>
+        <div class="category" onclick="toggleProducts('Verpackung')">Verpackung</div>
+
         </div>
         
         <!-- Statistik-Container für jede Kategorie -->
@@ -386,85 +499,348 @@
         <div id="stats-Hefe" class="stats-container">
             <p>Wird geladen...</p>
         </div>
-        <div id="stats-Verpackung" class="stats-container">
-            <p>Wird geladen...</p>
-        </div>
         <div id="stats-Diverses" class="stats-container">
             <p>Wird geladen...</p>
         </div>
+        <div id="stats-Verpackung" class="stats-container">
+            <p>Wird geladen...</p>
+        </div>
 
-        <div id="Malz" class="products"><div class="product"><img src="https://image.izettle.com/product/P4AMvlXVEem1m1EKmWY5Wg-9gGg7FraEemT-c_MvfxbQw.jpeg"><h3>Aromamalz (260-300 EBC)</h3><p class="price">1,10 €</p><p class="stock">16.44 kg</p></div>
-<div class="product"><img src="https://image.izettle.com/product/P4AMvlXVEem1m1EKmWY5Wg-khLtIFraEemjw_cmmAAm-g.jpeg"><h3>Chocolate (800-1000 EBC)</h3><p class="price">1,10 €</p><p class="stock">15.2 kg</p></div>
-<div class="product"><img src="https://image.izettle.com/product/M2Y4MDBjYmUtNTVkNS0xMWU5LWI1OWItNTEwYTk5NjYzOTVh-MmNmYzAzNTAtM2RmNS0xMWVmLWE0YTUtYzNiY2YyYmM4MTYz.png"><h3>Karamell Ahorn (3-6 EBC)</h3><p class="price">1,10 €</p><p class="stock">23.44 kg</p></div>
-<div class="product"><img src="https://image.izettle.com/product/P4AMvlXVEem1m1EKmWY5Wg-AZulzFrdEemZuv6ZTdadlw.jpeg"><h3>Karamell Dunkel/Palisander (110-130 EBC)</h3><p class="price">1,10 €</p><p class="stock">11.38 kg</p></div>
-<div class="product"><img src="https://image.izettle.com/product/P4AMvlXVEem1m1EKmWY5Wg-Ahre8D2jEe21dl5TW_kT0w.png"><h3>Karamell Eiche (25-35 EBC)</h3><p class="price">1,10 €</p><p class="stock">7.86 kg</p></div>
-<div class="product"><img src="https://image.izettle.com/product/P4AMvlXVEem1m1EKmWY5Wg-MxsYwlrcEem8qdWOUqoWHg.jpeg"><h3>Karamell Hell/Birke (10-15 EBC)</h3><p class="price">1,10 €</p><p class="stock">97.6 kg</p></div>
-<div class="product"><img src="https://image.izettle.com/product/P4AMvlXVEem1m1EKmWY5Wg--0PrmFrdEemPMIeenHvjFQ.jpeg"><h3>Karamell Medium / Mahagoni (55-65 EBC)</h3><p class="price">1,10 €</p><p class="stock">25.66 kg</p></div>
-<div class="product"><img src="https://image.izettle.com/product/P4AMvlXVEem1m1EKmWY5Wg-kmH6cIx4EeqrIh1oq21J5w.png"><h3>Mela Buche (80-90 EBC)</h3><p class="price">1,10 €</p><p class="stock">20.01 kg</p></div>
-<div class="product"><img src="https://image.izettle.com/product/P4AMvlXVEem1m1EKmWY5Wg-MQgfFFraEem-rFnkupaoOA.jpeg"><h3>Mela Rot-Erle (40-50 EBC)</h3><p class="price">1,10 €</p><p class="stock">18.62 kg</p></div>
-<div class="product"><img src="https://image.izettle.com/product/P4AMvlXVEem1m1EKmWY5Wg-l9aKbFrXEemUGxG4f6nKDg.jpeg"><h3>Münchner (18-22 EBC)</h3><p class="price">1,10 €</p><p class="stock">68.65 kg</p></div>
-<div class="product"><img src="https://image.izettle.com/product/P4AMvlXVEem1m1EKmWY5Wg-eLxpbeuLEeuvBEwJ4saFyQ.png"><h3>Oat Malt</h3><p class="price">1,10 €</p><p class="stock">34.64 kg</p></div>
-<div class="product"><img src="https://image.izettle.com/product/P4AMvlXVEem1m1EKmWY5Wg-mAMGkFrYEemRqC6UE_hQOw.jpeg"><h3>Pale Ale (5-7 EBC)</h3><p class="price">1,10 €</p><p class="stock">560.47 kg</p></div>
-<div class="product"><img src="https://image.izettle.com/product/P4AMvlXVEem1m1EKmWY5Wg-Ui9a4lrYEemEdlOrq1-CKw.jpeg"><h3>Pilsner (3-5 EBC)</h3><p class="price">1,10 €</p><p class="stock">1442.69 kg</p></div>
-<div class="product"><img src="https://image.izettle.com/product/P4AMvlXVEem1m1EKmWY5Wg-A7T3nlraEemGm6GxCR5sYA.jpeg"><h3>Rauchmalz (3-8 EBC)</h3><p class="price">1,10 €</p><p class="stock">23.77 kg</p></div>
-<div class="product"><img src="https://image.izettle.com/product/P4AMvlXVEem1m1EKmWY5Wg-vhRcMlrbEemBan9QPUnrlw.jpeg"><h3>Röstmalz (1300-1500 EBC)</h3><p class="price">1,10 €</p><p class="stock">19.755 kg</p></div>
-<div class="product"><img src="https://image.izettle.com/product/P4AMvlXVEem1m1EKmWY5Wg-PN3dolrZEemBNuw-yyL4lA.jpeg"><h3>Sauermalz (2-5 EBC)</h3><p class="price">1,10 €</p><p class="stock">18.555 kg</p></div>
-<div class="product"><img src="https://image.izettle.com/product/M2Y4MDBjYmUtNTVkNS0xMWU5LWI1OWItNTEwYTk5NjYzOTVh-YTAyNjk2NjAtM2RmNS0xMWVmLThlMzctYjUwYjdmMjEzYWM3.png"><h3>Spitzmalz (2-5 EBC)</h3><p class="price">1,10 €</p><p class="stock">94.55 kg</p></div>
-<div class="product"><img src="https://image.izettle.com/product/P4AMvlXVEem1m1EKmWY5Wg-pFUexIx4Eeq1MyoqfbcrjA.png"><h3>Weizen dunkel (14-18 EBC)</h3><p class="price">1,10 €</p><p class="stock">42.76 kg</p></div>
-<div class="product"><img src="https://image.izettle.com/product/P4AMvlXVEem1m1EKmWY5Wg-JWFm1lrYEemGJ4WmoEIx3w.jpeg"><h3>Weizen hell (3-5 EBC)</h3><p class="price">1,10 €</p><p class="stock">80.29 kg</p></div>
-<div class="product"><img src="https://image.izettle.com/product/P4AMvlXVEem1m1EKmWY5Wg-BPir6FrYEemgtmgVW4xSfQ.jpeg"><h3>Wiener Malz (8-10 EBC)</h3><p class="price">1,10 €</p><p class="stock">365.12 kg</p></div></div>
-        <div id="Hopfen" class="products"><div class="product"><img src="https://image.izettle.com/product/P4AMvlXVEem1m1EKmWY5Wg-X4YEylrTEemwKf6dJ86VSA.jpeg"><h3>Amarillo</h3><p class="price">4,50 €</p><p class="stock">7 Päckchen</p></div>
-<div class="product"><img src="https://image.izettle.com/product/P4AMvlXVEem1m1EKmWY5Wg-h7Ifnyd_Ee2NoIuIjvosSQ.jpeg"><h3>Ariana</h3><p class="price">2,00 €</p><p class="stock">18 Päckchen</p></div>
-<div class="product"><img src="https://image.izettle.com/product/P4AMvlXVEem1m1EKmWY5Wg--OxciFzDEeuz8z55y1BJ0w.jpeg"><h3>Belma</h3><p class="price">4,00 €</p><p class="stock">3 Päckchen</p><span class="auslaufend">Artikel auslaufend</span></div>
-<div class="product"><img src="https://image.izettle.com/product/P4AMvlXVEem1m1EKmWY5Wg-j3ELHFrTEemttFQqS--eYQ.jpeg"><h3>Callista</h3><p class="price">2,50 €</p><p class="stock">0 Päckchen</p><span class="auslaufend">Artikel auslaufend</span></div>
-<div class="product"><img src="https://image.izettle.com/product/P4AMvlXVEem1m1EKmWY5Wg-nxdsqlrTEemWslIX8qc5ug.jpeg"><h3>Cascade</h3><p class="price">3,50 €</p><p class="stock">6 Päckchen</p></div>
-<div class="product"><img src="https://image.izettle.com/product/P4AMvlXVEem1m1EKmWY5Wg-rEz50p6mEem1SSRhVZUvTg.jpeg"><h3>Centennial</h3><p class="price">4,00 €</p><p class="stock">4 Päckchen</p><span class="auslaufend">Artikel auslaufend</span></div>
-<div class="product"><img src="https://image.izettle.com/product/P4AMvlXVEem1m1EKmWY5Wg-r8uZUFzEEeuPVR72hep52g.jpeg"><h3>Chinook</h3><p class="price">4,00 €</p><p class="stock">5 Päckchen</p></div>
-<div class="product"><img src="https://image.izettle.com/product/P4AMvlXVEem1m1EKmWY5Wg-v3OQ8FrTEemh031KnGIhNQ.jpeg"><h3>Citra</h3><p class="price">5,00 €</p><p class="stock">0 Päckchen</p></div>
-<div class="product"><img src="https://image.izettle.com/product/P4AMvlXVEem1m1EKmWY5Wg-aCBMlFzFEeulw5hd1FW3qw.jpeg"><h3>Cluster</h3><p class="price">4,00 €</p><p class="stock">8 Päckchen</p><span class="auslaufend">Artikel auslaufend</span></div>
-<div class="product"><img src="https://image.izettle.com/product/P4AMvlXVEem1m1EKmWY5Wg-5C6ZumMREeuoRGLZlSU36w.jpeg"><h3>Crystal</h3><p class="price">4,00 €</p><p class="stock">5 Päckchen</p><span class="auslaufend">Artikel auslaufend</span></div>
-<div class="product"><img src="https://image.izettle.com/product/P4AMvlXVEem1m1EKmWY5Wg-2eXYilrTEemKlGG3eSb20w.jpeg"><h3>East Kent Golding </h3><p class="price">4,00 €</p><p class="stock">8 Päckchen</p></div>
-<div class="product"><img src="https://image.izettle.com/product/P4AMvlXVEem1m1EKmWY5Wg-sHpcblzFEeutuZtveItlXA.jpeg"><h3>Ella</h3><p class="price">5,00 €</p><p class="stock">4 Päckchen</p><span class="auslaufend">Artikel auslaufend</span></div>
-<div class="product"><img src="https://image.izettle.com/product/P4AMvlXVEem1m1EKmWY5Wg-QUKAEClPEeqzhD4sDszWMQ.jpeg"><h3>Fuggles</h3><p class="price">4,00 €</p><p class="stock">2 Päckchen</p></div>
-<div class="product"><img src="https://image.izettle.com/product/P4AMvlXVEem1m1EKmWY5Wg-OInKwlzGEeuSZdXRkneogQ.jpeg"><h3>Galaxy</h3><p class="price">5,00 €</p><p class="stock">0 Päckchen</p></div>
-<div class="product"><img src="https://image.izettle.com/product/P4AMvlXVEem1m1EKmWY5Wg-2C7vjClOEeqT-7k3Bhy7CQ.jpeg"><h3>Hallertauer Diamant</h3><p class="price">3,00 €</p><p class="stock">1 Päckchen</p><span class="auslaufend">Artikel auslaufend</span></div>
-<div class="product"><img src="https://image.izettle.com/product/P4AMvlXVEem1m1EKmWY5Wg-LcdSbFrUEemufXh7MFJpbQ.jpeg"><h3>Hallertauer Mittelfrüh</h3><p class="price">3,50 €</p><p class="stock">5 Päckchen</p></div>
-<div class="product"><img src="https://image.izettle.com/product/P4AMvlXVEem1m1EKmWY5Wg-X8vKfFrUEem1g6bM5MACiQ.jpeg"><h3>Hallertauer Perle</h3><p class="price">3,00 €</p><p class="stock">-4 Päckchen</p></div>
-<div class="product"><img src="https://image.izettle.com/product/P4AMvlXVEem1m1EKmWY5Wg-p8AHP_dcEeu8Z5INcU_YCQ.jpeg"><h3>Hallertauer Reschberry</h3><p class="price">2,50 €</p><p class="stock">3 Päckchen</p><span class="auslaufend">Artikel auslaufend</span></div>
-<div class="product"><img src="https://image.izettle.com/product/P4AMvlXVEem1m1EKmWY5Wg-7J5AiFrUEemRvpiBmMSCtA.jpeg"><h3>Hallertauer Sorachi Ace</h3><p class="price">3,00 €</p><p class="stock">1 Päckchen</p><span class="auslaufend">Artikel auslaufend</span></div>
-<div class="product"><img src="https://image.izettle.com/product/P4AMvlXVEem1m1EKmWY5Wg-xheC5F8KEeugdb5Ve1vYlQ.jpeg"><h3>Hallertauer Tradition</h3><p class="price">3,00 €</p><p class="stock">-3 Päckchen</p></div>
-<div class="product"><img src="https://image.izettle.com/product/P4AMvlXVEem1m1EKmWY5Wg-BHX-enhXEeubdeTSWHyd0w.jpeg"><h3>Izabella</h3><p class="price">1,10 €</p><p class="stock">1 Päckchen</p><span class="auslaufend">Artikel auslaufend</span></div>
-<div class="product"><img src="https://image.izettle.com/product/P4AMvlXVEem1m1EKmWY5Wg-tnBP0nhWEeudTcuRiZAzGg.jpeg"><h3>Lubelski</h3><p class="price">1,10 €</p><p class="stock">0 Päckchen</p><span class="auslaufend">Artikel auslaufend</span></div>
-<div class="product"><img src="https://image.izettle.com/product/P4AMvlXVEem1m1EKmWY5Wg-mTxBWnhWEeuL22od0l4yYg.jpeg"><h3>Lunga</h3><p class="price">1,10 €</p><p class="stock">1 Päckchen</p><span class="auslaufend">Artikel auslaufend</span></div>
-<div class="product"><img src="https://image.izettle.com/product/P4AMvlXVEem1m1EKmWY5Wg-Ef_rcFrUEemXNVFuJhTHXA.jpeg"><h3>Mandarina Bavaria</h3><p class="price">2,50 €</p><p class="stock">0 Päckchen</p></div>
-<div class="product"><img src="https://image.izettle.com/product/P4AMvlXVEem1m1EKmWY5Wg-GQ6YFnhWEeuuh_zFdLEleQ.jpeg"><h3>Marynka</h3><p class="price">1,10 €</p><p class="stock">1 Päckchen</p><span class="auslaufend">Artikel auslaufend</span></div>
-<div class="product"><img src="https://image.izettle.com/product/P4AMvlXVEem1m1EKmWY5Wg-Rz6h3FrUEemSWCzl442dOg.jpeg"><h3>Mosaic</h3><p class="price">5,00 €</p><p class="stock">6 Päckchen</p></div>
-<div class="product"><img src="https://image.izettle.com/product/P4AMvlXVEem1m1EKmWY5Wg-OOwmdnhWEeukHKOVucR70Q.jpeg"><h3>Oktawia</h3><p class="price">1,10 €</p><p class="stock">1 Päckchen</p><span class="auslaufend">Artikel auslaufend</span></div>
-<div class="product"><img src="https://image.izettle.com/product/P4AMvlXVEem1m1EKmWY5Wg-1mXsRHhVEeucNLyNxAdMHA.jpeg"><h3>Puławski</h3><p class="price">1,10 €</p><p class="stock">3 Päckchen</p><span class="auslaufend">Artikel auslaufend</span></div>
-<div class="product"><img src="https://image.izettle.com/product/P4AMvlXVEem1m1EKmWY5Wg-Ln_D8FzHEeudP4_UXNp_3A.jpeg"><h3>Rakau</h3><p class="price">5,00 €</p><p class="stock">4 Päckchen</p><span class="auslaufend">Artikel auslaufend</span></div>
-<div class="product"><img src="https://image.izettle.com/product/P4AMvlXVEem1m1EKmWY5Wg-eKpG6lrUEemutr6aW41UvQ.jpeg"><h3>Saazer </h3><p class="price">3,50 €</p><p class="stock">0 Päckchen</p></div>
-<div class="product"><img src="https://image.izettle.com/product/P4AMvlXVEem1m1EKmWY5Wg-mQueolrUEem9Bk-mGNNJSA.jpeg"><h3>Simcoe</h3><p class="price">5,50 €</p><p class="stock">4 Päckchen</p></div>
-<div class="product"><img src="https://image.izettle.com/product/P4AMvlXVEem1m1EKmWY5Wg-7xxE5FzHEeunyl0XaiSw4A.jpeg"><h3>Tardif de Bourgogne</h3><p class="price">4,00 €</p><p class="stock">7 Päckchen</p><span class="auslaufend">Artikel auslaufend</span></div>
-<div class="product"><img src="https://image.izettle.com/product/P4AMvlXVEem1m1EKmWY5Wg-0mxQKHhWEeu3jJ3pxdOF8w.jpeg"><h3>Tomyski</h3><p class="price">1,10 €</p><p class="stock">1 Päckchen</p><span class="auslaufend">Artikel auslaufend</span></div>
-<div class="product"><img src="https://image.izettle.com/product/P4AMvlXVEem1m1EKmWY5Wg-OFucrp6mEemkHKIjyWvR9g.jpeg"><h3>Topaz</h3><p class="price">4,00 €</p><p class="stock">8 Päckchen</p><span class="auslaufend">Artikel auslaufend</span></div></div>
-        <div id="Hefe" class="products"><div class="product"><img src="https://image.izettle.com/product/P4AMvlXVEem1m1EKmWY5Wg-5Jlq2lrYEem9LPwG7PRJgw.jpeg"><h3>Bavarian Wheat</h3><p class="price">2,00 €</p><p class="stock">3 Päckchen</p></div>
-<div class="product"><img src="https://image.izettle.com/product/P4AMvlXVEem1m1EKmWY5Wg-zPMbjY5WEeutHyz_aEUg_Q.jpeg"><h3>Belgian Trappist Ale Yeast Rochefort</h3><p class="price">2,00 €</p><p class="stock">2 Päckchen</p><span class="auslaufend">Artikel auslaufend</span></div>
-<div class="product"><img src="https://image.izettle.com/product/P4AMvlXVEem1m1EKmWY5Wg-Cge3XlrZEem-EJWUuh1XJg.jpeg"><h3>Czech Pilsener</h3><p class="price">2,00 €</p><p class="stock">0 Päckchen</p></div>
-<div class="product"><img src="https://image.izettle.com/product/P4AMvlXVEem1m1EKmWY5Wg-FKPBTlrZEem52o-DUPmW1Q.jpeg"><h3>French Cider</h3><p class="price">2,00 €</p><p class="stock">13 Päckchen</p><span class="auslaufend">Artikel auslaufend</span></div>
-<div class="product"><img src="https://image.izettle.com/product/P4AMvlXVEem1m1EKmWY5Wg-JQbzYlrZEemGNyOTZ1dCfQ.jpeg"><h3>Fruit Blanche</h3><p class="price">2,00 €</p><p class="stock">1 Päckchen</p><span class="auslaufend">Artikel auslaufend</span></div>
-<div class="product"><img src="https://image.izettle.com/product/P4AMvlXVEem1m1EKmWY5Wg-LgqNylrZEem9kGvNr0RV4Q.jpeg"><h3>German Lager W35</h3><p class="price">2,00 €</p><p class="stock">9 Päckchen</p></div>
-<div class="product"><img src="https://image.izettle.com/product/P4AMvlXVEem1m1EKmWY5Wg-R3vJQI5XEeu87xdFiUzZxA.png"><h3>Noble Saison</h3><p class="price">2,00 €</p><p class="stock">6 Päckchen</p><span class="auslaufend">Artikel auslaufend</span></div>
-<div class="product"><img src="https://image.izettle.com/product/P4AMvlXVEem1m1EKmWY5Wg-Y6TyoFrYEemkK_QXc4p5EQ.jpeg"><h3>Notty</h3><p class="price">2,00 €</p><p class="stock">32 Päckchen</p></div>
-<div class="product"><img src="https://image.izettle.com/product/P4AMvlXVEem1m1EKmWY5Wg-OwoaSlrZEemsLEbjGQaTyw.jpeg"><h3>Old German Altbier</h3><p class="price">2,00 €</p><p class="stock">0 Päckchen</p></div>
-<div class="product"><img src="https://image.izettle.com/product/P4AMvlXVEem1m1EKmWY5Wg-1QD9qFreEemlMANMNEOpeA.jpeg"><h3>Original British Ale Yeast Withbread</h3><p class="price">2,00 €</p><p class="stock">8 Päckchen</p></div>
-<div class="product"><img src="https://image.izettle.com/product/P4AMvlXVEem1m1EKmWY5Wg-R-e0bFrYEemtt0LL9hAXYg.jpeg"><h3>Pure Ale PAY7</h3><p class="price">2,00 €</p><p class="stock">1 Päckchen</p></div>
-<div class="product"><img src="https://image.izettle.com/product/P4AMvlXVEem1m1EKmWY5Wg-732KcFreEemSZI9QRHayfg.jpeg"><h3>U.S. Westcoast Chico</h3><p class="price">2,00 €</p><p class="stock">0 Päckchen</p></div>
-<div class="product"><img src="https://image.izettle.com/product/P4AMvlXVEem1m1EKmWY5Wg-X46hVlrUEemxg3uEqq8MGA.jpeg"><h3>W34/70</h3><p class="price">2,00 €</p><p class="stock">28 Päckchen</p></div></div>
-        <div id="Verpackung" class="products"><div class="product"><img src="https://image.izettle.com/product/M2Y4MDBjYmUtNTVkNS0xMWU5LWI1OWItNTEwYTk5NjYzOTVh-MGE5ZTE0MDAtZTJkOC0xMWVmLWEwMjYtZTk0YzY3YmVlMDdi.jpeg"><h3>Papiertüte groß (10 kg)</h3><p class="price">1,00 €</p><p class="stock">49 Stück</p></div>
-<div class="product"><img src="https://image.izettle.com/product/M2Y4MDBjYmUtNTVkNS0xMWU5LWI1OWItNTEwYTk5NjYzOTVh-Njk3ZWFjMTAtZTJkNy0xMWVmLThkMjgtYjE4OWU3MmQ3YmQ4.jpeg"><h3>Papiertüte klein (1,5 kg)</h3><p class="price">0,30 €</p><p class="stock">100 Stück</p></div>
-<div class="product"><img src="https://image.izettle.com/product/M2Y4MDBjYmUtNTVkNS0xMWU5LWI1OWItNTEwYTk5NjYzOTVh-ZTUyMzMyZjAtZTJkNy0xMWVmLWEwMjYtZTk0YzY3YmVlMDdi.jpeg"><h3>Papiertüte mittel (3 kg)</h3><p class="price">0,60 €</p><p class="stock">199 Stück</p></div></div>
-        <div id="Diverses" class="products"><div class="product"><img src="https://image.izettle.com/product/M2Y4MDBjYmUtNTVkNS0xMWU5LWI1OWItNTEwYTk5NjYzOTVh-YTQ1MDM1OTAtMDBjNi0xMWYwLTkyNWItZTM0OWRiYjNhN2Qw.jpeg"><h3>6 Verkostungsgläser (nur nach Vorbestellung)</h3><p class="price">21,00 €</p><p class="stock">0 Stück</p></div>
-<div class="product"><img src="https://image.izettle.com/product/M2Y4MDBjYmUtNTVkNS0xMWU5LWI1OWItNTEwYTk5NjYzOTVh-MjAyNDNlMTAtMGYwMy0xMWYwLTg3ZTktMmYzYjkzNmRkZDkw.jpeg"><h3>Reparatur-Kit 1 für NC-Keg</h3><p class="price">5,00 €</p><p class="stock">28 Stück</p></div></div>
+
+        <!-- Produkt-Container für jede Kategorie -->
+        <div id="Malz" class="products"><div class="product-flip  " onclick="flipCard(this)">
+  <div class="product-flip-inner">
+    <div class="product-front">
+      <img src="https://image.izettle.com/product/P4AMvlXVEem1m1EKmWY5Wg-9gGg7FraEemT-c_MvfxbQw.jpeg"><h3>Aromamalz (260-300 EBC)</h3>
+      <p class="price">1,10 €</p>
+      <p class="stock">16.4 kg</p>
+    </div>
+    <div class="product-back">
+      <h3>Aromamalz (260-300 EBC)</h3>
+      <p class="detail">Säcke: 0 x 25 kg</p>
+      <p class="detail">Rest in Tonne: 16.4 kg</p>
+    </div>
+  </div>
+</div>
+<div class="product-flip  " onclick="flipCard(this)">
+  <div class="product-flip-inner">
+    <div class="product-front">
+      <img src="https://image.izettle.com/product/P4AMvlXVEem1m1EKmWY5Wg-khLtIFraEemjw_cmmAAm-g.jpeg"><h3>Chocolate (800-1000 EBC)</h3>
+      <p class="price">1,10 €</p>
+      <p class="stock">15.2 kg</p>
+    </div>
+    <div class="product-back">
+      <h3>Chocolate (800-1000 EBC)</h3>
+      <p class="detail">Säcke: 0 x 25 kg</p>
+      <p class="detail">Rest in Tonne: 15.2 kg</p>
+    </div>
+  </div>
+</div>
+<div class="product-flip  " onclick="flipCard(this)">
+  <div class="product-flip-inner">
+    <div class="product-front">
+      <img src="https://image.izettle.com/product/M2Y4MDBjYmUtNTVkNS0xMWU5LWI1OWItNTEwYTk5NjYzOTVh-MmNmYzAzNTAtM2RmNS0xMWVmLWE0YTUtYzNiY2YyYmM4MTYz.png"><h3>Karamell Ahorn (3-6 EBC)</h3>
+      <p class="price">1,10 €</p>
+      <p class="stock">23.4 kg</p>
+    </div>
+    <div class="product-back">
+      <h3>Karamell Ahorn (3-6 EBC)</h3>
+      <p class="detail">Säcke: 0 x 25 kg</p>
+      <p class="detail">Rest in Tonne: 23.4 kg</p>
+    </div>
+  </div>
+</div>
+<div class="product-flip  " onclick="flipCard(this)">
+  <div class="product-flip-inner">
+    <div class="product-front">
+      <img src="https://image.izettle.com/product/P4AMvlXVEem1m1EKmWY5Wg-AZulzFrdEemZuv6ZTdadlw.jpeg"><h3>Karamell Dunkel/Palisander (110-130 EBC)</h3>
+      <p class="price">1,10 €</p>
+      <p class="stock">11.4 kg</p>
+    </div>
+    <div class="product-back">
+      <h3>Karamell Dunkel/Palisander (110-130 EBC)</h3>
+      <p class="detail">Säcke: 0 x 25 kg</p>
+      <p class="detail">Rest in Tonne: 11.4 kg</p>
+    </div>
+  </div>
+</div>
+<div class="product-flip  " onclick="flipCard(this)">
+  <div class="product-flip-inner">
+    <div class="product-front">
+      <img src="https://image.izettle.com/product/P4AMvlXVEem1m1EKmWY5Wg-Ahre8D2jEe21dl5TW_kT0w.png"><h3>Karamell Eiche (25-35 EBC)</h3>
+      <p class="price">1,10 €</p>
+      <p class="stock">7.9 kg</p>
+    </div>
+    <div class="product-back">
+      <h3>Karamell Eiche (25-35 EBC)</h3>
+      <p class="detail">Säcke: 0 x 25 kg</p>
+      <p class="detail">Rest in Tonne: 7.9 kg</p>
+    </div>
+  </div>
+</div>
+<div class="product-flip  " onclick="flipCard(this)">
+  <div class="product-flip-inner">
+    <div class="product-front">
+      <img src="https://image.izettle.com/product/P4AMvlXVEem1m1EKmWY5Wg-MxsYwlrcEem8qdWOUqoWHg.jpeg"><h3>Karamell Hell/Birke (10-15 EBC)</h3>
+      <p class="price">1,10 €</p>
+      <p class="stock">97.6 kg</p>
+    </div>
+    <div class="product-back">
+      <h3>Karamell Hell/Birke (10-15 EBC)</h3>
+      <p class="detail">Säcke: 3 x 25 kg</p>
+      <p class="detail">Rest in Tonne: 22.6 kg</p>
+    </div>
+  </div>
+</div>
+<div class="product-flip  " onclick="flipCard(this)">
+  <div class="product-flip-inner">
+    <div class="product-front">
+      <img src="https://image.izettle.com/product/P4AMvlXVEem1m1EKmWY5Wg--0PrmFrdEemPMIeenHvjFQ.jpeg"><h3>Karamell Medium / Mahagoni (55-65 EBC)</h3>
+      <p class="price">1,10 €</p>
+      <p class="stock">25.7 kg</p>
+    </div>
+    <div class="product-back">
+      <h3>Karamell Medium / Mahagoni (55-65 EBC)</h3>
+      <p class="detail">Säcke: 1 x 25 kg</p>
+      <p class="detail">Rest in Tonne: 0.7 kg</p>
+    </div>
+  </div>
+</div>
+<div class="product-flip  " onclick="flipCard(this)">
+  <div class="product-flip-inner">
+    <div class="product-front">
+      <img src="https://image.izettle.com/product/P4AMvlXVEem1m1EKmWY5Wg-kmH6cIx4EeqrIh1oq21J5w.png"><h3>Mela Buche (80-90 EBC)</h3>
+      <p class="price">1,10 €</p>
+      <p class="stock">20.0 kg</p>
+    </div>
+    <div class="product-back">
+      <h3>Mela Buche (80-90 EBC)</h3>
+      <p class="detail">Säcke: 0 x 25 kg</p>
+      <p class="detail">Rest in Tonne: 20.0 kg</p>
+    </div>
+  </div>
+</div>
+<div class="product-flip  " onclick="flipCard(this)">
+  <div class="product-flip-inner">
+    <div class="product-front">
+      <img src="https://image.izettle.com/product/P4AMvlXVEem1m1EKmWY5Wg-MQgfFFraEem-rFnkupaoOA.jpeg"><h3>Mela Rot-Erle (40-50 EBC)</h3>
+      <p class="price">1,10 €</p>
+      <p class="stock">18.6 kg</p>
+    </div>
+    <div class="product-back">
+      <h3>Mela Rot-Erle (40-50 EBC)</h3>
+      <p class="detail">Säcke: 0 x 25 kg</p>
+      <p class="detail">Rest in Tonne: 18.6 kg</p>
+    </div>
+  </div>
+</div>
+<div class="product-flip  " onclick="flipCard(this)">
+  <div class="product-flip-inner">
+    <div class="product-front">
+      <img src="https://image.izettle.com/product/P4AMvlXVEem1m1EKmWY5Wg-l9aKbFrXEemUGxG4f6nKDg.jpeg"><h3>Münchner (18-22 EBC)</h3>
+      <p class="price">1,10 €</p>
+      <p class="stock">68.7 kg</p>
+    </div>
+    <div class="product-back">
+      <h3>Münchner (18-22 EBC)</h3>
+      <p class="detail">Säcke: 2 x 25 kg</p>
+      <p class="detail">Rest in Tonne: 18.7 kg</p>
+    </div>
+  </div>
+</div>
+<div class="product-flip  " onclick="flipCard(this)">
+  <div class="product-flip-inner">
+    <div class="product-front">
+      <img src="https://image.izettle.com/product/P4AMvlXVEem1m1EKmWY5Wg-eLxpbeuLEeuvBEwJ4saFyQ.png"><h3>Oat Malt</h3>
+      <p class="price">1,10 €</p>
+      <p class="stock">34.6 kg</p>
+    </div>
+    <div class="product-back">
+      <h3>Oat Malt</h3>
+      <p class="detail">Säcke: 1 x 25 kg</p>
+      <p class="detail">Rest in Tonne: 9.6 kg</p>
+    </div>
+  </div>
+</div>
+<div class="product-flip  " onclick="flipCard(this)">
+  <div class="product-flip-inner">
+    <div class="product-front">
+      <img src="https://image.izettle.com/product/P4AMvlXVEem1m1EKmWY5Wg-mAMGkFrYEemRqC6UE_hQOw.jpeg"><h3>Pale Ale (5-7 EBC)</h3>
+      <p class="price">1,10 €</p>
+      <p class="stock">560.5 kg</p>
+    </div>
+    <div class="product-back">
+      <h3>Pale Ale (5-7 EBC)</h3>
+      <p class="detail">Säcke: 22 x 25 kg</p>
+      <p class="detail">Rest in Tonne: 10.5 kg</p>
+    </div>
+  </div>
+</div>
+<div class="product-flip  " onclick="flipCard(this)">
+  <div class="product-flip-inner">
+    <div class="product-front">
+      <img src="https://image.izettle.com/product/P4AMvlXVEem1m1EKmWY5Wg-Ui9a4lrYEemEdlOrq1-CKw.jpeg"><h3>Pilsner (3-5 EBC)</h3>
+      <p class="price">1,10 €</p>
+      <p class="stock">1442.7 kg</p>
+    </div>
+    <div class="product-back">
+      <h3>Pilsner (3-5 EBC)</h3>
+      <p class="detail">Säcke: 57 x 25 kg</p>
+      <p class="detail">Rest in Tonne: 17.7 kg</p>
+    </div>
+  </div>
+</div>
+<div class="product-flip  " onclick="flipCard(this)">
+  <div class="product-flip-inner">
+    <div class="product-front">
+      <img src="https://image.izettle.com/product/P4AMvlXVEem1m1EKmWY5Wg-A7T3nlraEemGm6GxCR5sYA.jpeg"><h3>Rauchmalz (3-8 EBC)</h3>
+      <p class="price">1,10 €</p>
+      <p class="stock">23.8 kg</p>
+    </div>
+    <div class="product-back">
+      <h3>Rauchmalz (3-8 EBC)</h3>
+      <p class="detail">Säcke: 0 x 25 kg</p>
+      <p class="detail">Rest in Tonne: 23.8 kg</p>
+    </div>
+  </div>
+</div>
+<div class="product-flip  " onclick="flipCard(this)">
+  <div class="product-flip-inner">
+    <div class="product-front">
+      <img src="https://image.izettle.com/product/P4AMvlXVEem1m1EKmWY5Wg-vhRcMlrbEemBan9QPUnrlw.jpeg"><h3>Röstmalz (1300-1500 EBC)</h3>
+      <p class="price">1,10 €</p>
+      <p class="stock">19.8 kg</p>
+    </div>
+    <div class="product-back">
+      <h3>Röstmalz (1300-1500 EBC)</h3>
+      <p class="detail">Säcke: 0 x 25 kg</p>
+      <p class="detail">Rest in Tonne: 19.8 kg</p>
+    </div>
+  </div>
+</div>
+<div class="product-flip  " onclick="flipCard(this)">
+  <div class="product-flip-inner">
+    <div class="product-front">
+      <img src="https://image.izettle.com/product/P4AMvlXVEem1m1EKmWY5Wg-PN3dolrZEemBNuw-yyL4lA.jpeg"><h3>Sauermalz (2-5 EBC)</h3>
+      <p class="price">1,10 €</p>
+      <p class="stock">18.6 kg</p>
+    </div>
+    <div class="product-back">
+      <h3>Sauermalz (2-5 EBC)</h3>
+      <p class="detail">Säcke: 0 x 25 kg</p>
+      <p class="detail">Rest in Tonne: 18.6 kg</p>
+    </div>
+  </div>
+</div>
+<div class="product-flip  " onclick="flipCard(this)">
+  <div class="product-flip-inner">
+    <div class="product-front">
+      <img src="https://image.izettle.com/product/M2Y4MDBjYmUtNTVkNS0xMWU5LWI1OWItNTEwYTk5NjYzOTVh-YTAyNjk2NjAtM2RmNS0xMWVmLThlMzctYjUwYjdmMjEzYWM3.png"><h3>Spitzmalz (2-5 EBC)</h3>
+      <p class="price">1,10 €</p>
+      <p class="stock">94.5 kg</p>
+    </div>
+    <div class="product-back">
+      <h3>Spitzmalz (2-5 EBC)</h3>
+      <p class="detail">Säcke: 3 x 25 kg</p>
+      <p class="detail">Rest in Tonne: 19.5 kg</p>
+    </div>
+  </div>
+</div>
+<div class="product-flip  " onclick="flipCard(this)">
+  <div class="product-flip-inner">
+    <div class="product-front">
+      <img src="https://image.izettle.com/product/P4AMvlXVEem1m1EKmWY5Wg-pFUexIx4Eeq1MyoqfbcrjA.png"><h3>Weizen dunkel (14-18 EBC)</h3>
+      <p class="price">1,10 €</p>
+      <p class="stock">42.8 kg</p>
+    </div>
+    <div class="product-back">
+      <h3>Weizen dunkel (14-18 EBC)</h3>
+      <p class="detail">Säcke: 1 x 25 kg</p>
+      <p class="detail">Rest in Tonne: 17.8 kg</p>
+    </div>
+  </div>
+</div>
+<div class="product-flip  " onclick="flipCard(this)">
+  <div class="product-flip-inner">
+    <div class="product-front">
+      <img src="https://image.izettle.com/product/P4AMvlXVEem1m1EKmWY5Wg-JWFm1lrYEemGJ4WmoEIx3w.jpeg"><h3>Weizen hell (3-5 EBC)</h3>
+      <p class="price">1,10 €</p>
+      <p class="stock">80.3 kg</p>
+    </div>
+    <div class="product-back">
+      <h3>Weizen hell (3-5 EBC)</h3>
+      <p class="detail">Säcke: 3 x 25 kg</p>
+      <p class="detail">Rest in Tonne: 5.3 kg</p>
+    </div>
+  </div>
+</div>
+<div class="product-flip  " onclick="flipCard(this)">
+  <div class="product-flip-inner">
+    <div class="product-front">
+      <img src="https://image.izettle.com/product/P4AMvlXVEem1m1EKmWY5Wg-BPir6FrYEemgtmgVW4xSfQ.jpeg"><h3>Wiener Malz (8-10 EBC)</h3>
+      <p class="price">1,10 €</p>
+      <p class="stock">365.1 kg</p>
+    </div>
+    <div class="product-back">
+      <h3>Wiener Malz (8-10 EBC)</h3>
+      <p class="detail">Säcke: 14 x 25 kg</p>
+      <p class="detail">Rest in Tonne: 15.1 kg</p>
+    </div>
+  </div>
+</div></div>
+        <div id="Hopfen" class="products"><div class="product  "><img src="https://image.izettle.com/product/P4AMvlXVEem1m1EKmWY5Wg-X4YEylrTEemwKf6dJ86VSA.jpeg"><h3>Amarillo</h3><p class="price">4,50 €</p><p class="stock">7 Päckchen</p></div>
+<div class="product  "><img src="https://image.izettle.com/product/P4AMvlXVEem1m1EKmWY5Wg-h7Ifnyd_Ee2NoIuIjvosSQ.jpeg"><h3>Ariana</h3><p class="price">2,00 €</p><p class="stock">18 Päckchen</p></div>
+<div class="product  "><img src="https://image.izettle.com/product/P4AMvlXVEem1m1EKmWY5Wg--OxciFzDEeuz8z55y1BJ0w.jpeg"><h3>Belma</h3><p class="price">4,00 €</p><p class="stock">3 Päckchen</p><span class="auslaufend">Artikel auslaufend</span></div>
+<div class="product zero-stock "><img src="https://image.izettle.com/product/P4AMvlXVEem1m1EKmWY5Wg-j3ELHFrTEemttFQqS--eYQ.jpeg"><h3>Callista</h3><p class="price">2,50 €</p><p class="stock">0 Päckchen</p><span class="auslaufend">Artikel auslaufend</span></div>
+<div class="product  "><img src="https://image.izettle.com/product/P4AMvlXVEem1m1EKmWY5Wg-nxdsqlrTEemWslIX8qc5ug.jpeg"><h3>Cascade</h3><p class="price">3,50 €</p><p class="stock">6 Päckchen</p></div>
+<div class="product  "><img src="https://image.izettle.com/product/P4AMvlXVEem1m1EKmWY5Wg-rEz50p6mEem1SSRhVZUvTg.jpeg"><h3>Centennial</h3><p class="price">4,00 €</p><p class="stock">4 Päckchen</p><span class="auslaufend">Artikel auslaufend</span></div>
+<div class="product  "><img src="https://image.izettle.com/product/P4AMvlXVEem1m1EKmWY5Wg-r8uZUFzEEeuPVR72hep52g.jpeg"><h3>Chinook</h3><p class="price">4,00 €</p><p class="stock">5 Päckchen</p></div>
+<div class="product zero-stock "><img src="https://image.izettle.com/product/P4AMvlXVEem1m1EKmWY5Wg-v3OQ8FrTEemh031KnGIhNQ.jpeg"><h3>Citra</h3><p class="price">5,00 €</p><p class="stock">0 Päckchen</p></div>
+<div class="product  "><img src="https://image.izettle.com/product/P4AMvlXVEem1m1EKmWY5Wg-aCBMlFzFEeulw5hd1FW3qw.jpeg"><h3>Cluster</h3><p class="price">4,00 €</p><p class="stock">8 Päckchen</p><span class="auslaufend">Artikel auslaufend</span></div>
+<div class="product  "><img src="https://image.izettle.com/product/P4AMvlXVEem1m1EKmWY5Wg-5C6ZumMREeuoRGLZlSU36w.jpeg"><h3>Crystal</h3><p class="price">4,00 €</p><p class="stock">5 Päckchen</p><span class="auslaufend">Artikel auslaufend</span></div>
+<div class="product  "><img src="https://image.izettle.com/product/P4AMvlXVEem1m1EKmWY5Wg-2eXYilrTEemKlGG3eSb20w.jpeg"><h3>East Kent Golding </h3><p class="price">4,00 €</p><p class="stock">8 Päckchen</p></div>
+<div class="product  "><img src="https://image.izettle.com/product/P4AMvlXVEem1m1EKmWY5Wg-sHpcblzFEeutuZtveItlXA.jpeg"><h3>Ella</h3><p class="price">5,00 €</p><p class="stock">4 Päckchen</p><span class="auslaufend">Artikel auslaufend</span></div>
+<div class="product  "><img src="https://image.izettle.com/product/P4AMvlXVEem1m1EKmWY5Wg-QUKAEClPEeqzhD4sDszWMQ.jpeg"><h3>Fuggles</h3><p class="price">4,00 €</p><p class="stock">2 Päckchen</p></div>
+<div class="product zero-stock "><img src="https://image.izettle.com/product/P4AMvlXVEem1m1EKmWY5Wg-OInKwlzGEeuSZdXRkneogQ.jpeg"><h3>Galaxy</h3><p class="price">5,00 €</p><p class="stock">0 Päckchen</p></div>
+<div class="product  "><img src="https://image.izettle.com/product/P4AMvlXVEem1m1EKmWY5Wg-2C7vjClOEeqT-7k3Bhy7CQ.jpeg"><h3>Hallertauer Diamant</h3><p class="price">3,00 €</p><p class="stock">1 Päckchen</p><span class="auslaufend">Artikel auslaufend</span></div>
+<div class="product  "><img src="https://image.izettle.com/product/P4AMvlXVEem1m1EKmWY5Wg-LcdSbFrUEemufXh7MFJpbQ.jpeg"><h3>Hallertauer Mittelfrüh</h3><p class="price">3,50 €</p><p class="stock">5 Päckchen</p></div>
+<div class="product  negative-stock"><img src="https://image.izettle.com/product/P4AMvlXVEem1m1EKmWY5Wg-X8vKfFrUEem1g6bM5MACiQ.jpeg"><h3>Hallertauer Perle</h3><p class="price">3,00 €</p><p class="stock">-4 Päckchen</p></div>
+<div class="product  "><img src="https://image.izettle.com/product/P4AMvlXVEem1m1EKmWY5Wg-p8AHP_dcEeu8Z5INcU_YCQ.jpeg"><h3>Hallertauer Reschberry</h3><p class="price">2,50 €</p><p class="stock">3 Päckchen</p><span class="auslaufend">Artikel auslaufend</span></div>
+<div class="product  "><img src="https://image.izettle.com/product/P4AMvlXVEem1m1EKmWY5Wg-7J5AiFrUEemRvpiBmMSCtA.jpeg"><h3>Hallertauer Sorachi Ace</h3><p class="price">3,00 €</p><p class="stock">1 Päckchen</p><span class="auslaufend">Artikel auslaufend</span></div>
+<div class="product  negative-stock"><img src="https://image.izettle.com/product/P4AMvlXVEem1m1EKmWY5Wg-xheC5F8KEeugdb5Ve1vYlQ.jpeg"><h3>Hallertauer Tradition</h3><p class="price">3,00 €</p><p class="stock">-3 Päckchen</p></div>
+<div class="product  "><img src="https://image.izettle.com/product/P4AMvlXVEem1m1EKmWY5Wg-BHX-enhXEeubdeTSWHyd0w.jpeg"><h3>Izabella</h3><p class="price">1,10 €</p><p class="stock">1 Päckchen</p><span class="auslaufend">Artikel auslaufend</span></div>
+<div class="product zero-stock "><img src="https://image.izettle.com/product/P4AMvlXVEem1m1EKmWY5Wg-tnBP0nhWEeudTcuRiZAzGg.jpeg"><h3>Lubelski</h3><p class="price">1,10 €</p><p class="stock">0 Päckchen</p><span class="auslaufend">Artikel auslaufend</span></div>
+<div class="product  "><img src="https://image.izettle.com/product/P4AMvlXVEem1m1EKmWY5Wg-mTxBWnhWEeuL22od0l4yYg.jpeg"><h3>Lunga</h3><p class="price">1,10 €</p><p class="stock">1 Päckchen</p><span class="auslaufend">Artikel auslaufend</span></div>
+<div class="product zero-stock "><img src="https://image.izettle.com/product/P4AMvlXVEem1m1EKmWY5Wg-Ef_rcFrUEemXNVFuJhTHXA.jpeg"><h3>Mandarina Bavaria</h3><p class="price">2,50 €</p><p class="stock">0 Päckchen</p></div>
+<div class="product  "><img src="https://image.izettle.com/product/P4AMvlXVEem1m1EKmWY5Wg-GQ6YFnhWEeuuh_zFdLEleQ.jpeg"><h3>Marynka</h3><p class="price">1,10 €</p><p class="stock">1 Päckchen</p><span class="auslaufend">Artikel auslaufend</span></div>
+<div class="product  "><img src="https://image.izettle.com/product/P4AMvlXVEem1m1EKmWY5Wg-Rz6h3FrUEemSWCzl442dOg.jpeg"><h3>Mosaic</h3><p class="price">5,00 €</p><p class="stock">6 Päckchen</p></div>
+<div class="product  "><img src="https://image.izettle.com/product/P4AMvlXVEem1m1EKmWY5Wg-OOwmdnhWEeukHKOVucR70Q.jpeg"><h3>Oktawia</h3><p class="price">1,10 €</p><p class="stock">1 Päckchen</p><span class="auslaufend">Artikel auslaufend</span></div>
+<div class="product  "><img src="https://image.izettle.com/product/P4AMvlXVEem1m1EKmWY5Wg-1mXsRHhVEeucNLyNxAdMHA.jpeg"><h3>Puławski</h3><p class="price">1,10 €</p><p class="stock">3 Päckchen</p><span class="auslaufend">Artikel auslaufend</span></div>
+<div class="product  "><img src="https://image.izettle.com/product/P4AMvlXVEem1m1EKmWY5Wg-Ln_D8FzHEeudP4_UXNp_3A.jpeg"><h3>Rakau</h3><p class="price">5,00 €</p><p class="stock">4 Päckchen</p><span class="auslaufend">Artikel auslaufend</span></div>
+<div class="product zero-stock "><img src="https://image.izettle.com/product/P4AMvlXVEem1m1EKmWY5Wg-eKpG6lrUEemutr6aW41UvQ.jpeg"><h3>Saazer </h3><p class="price">3,50 €</p><p class="stock">0 Päckchen</p></div>
+<div class="product  "><img src="https://image.izettle.com/product/P4AMvlXVEem1m1EKmWY5Wg-mQueolrUEem9Bk-mGNNJSA.jpeg"><h3>Simcoe</h3><p class="price">5,50 €</p><p class="stock">4 Päckchen</p></div>
+<div class="product  "><img src="https://image.izettle.com/product/P4AMvlXVEem1m1EKmWY5Wg-7xxE5FzHEeunyl0XaiSw4A.jpeg"><h3>Tardif de Bourgogne</h3><p class="price">4,00 €</p><p class="stock">7 Päckchen</p><span class="auslaufend">Artikel auslaufend</span></div>
+<div class="product  "><img src="https://image.izettle.com/product/P4AMvlXVEem1m1EKmWY5Wg-0mxQKHhWEeu3jJ3pxdOF8w.jpeg"><h3>Tomyski</h3><p class="price">1,10 €</p><p class="stock">1 Päckchen</p><span class="auslaufend">Artikel auslaufend</span></div>
+<div class="product  "><img src="https://image.izettle.com/product/P4AMvlXVEem1m1EKmWY5Wg-OFucrp6mEemkHKIjyWvR9g.jpeg"><h3>Topaz</h3><p class="price">4,00 €</p><p class="stock">8 Päckchen</p><span class="auslaufend">Artikel auslaufend</span></div></div>
+        <div id="Hefe" class="products"><div class="product  "><img src="https://image.izettle.com/product/P4AMvlXVEem1m1EKmWY5Wg-5Jlq2lrYEem9LPwG7PRJgw.jpeg"><h3>Bavarian Wheat</h3><p class="price">2,00 €</p><p class="stock">3 Päckchen</p></div>
+<div class="product  "><img src="https://image.izettle.com/product/P4AMvlXVEem1m1EKmWY5Wg-zPMbjY5WEeutHyz_aEUg_Q.jpeg"><h3>Belgian Trappist Ale Yeast Rochefort</h3><p class="price">2,00 €</p><p class="stock">2 Päckchen</p><span class="auslaufend">Artikel auslaufend</span></div>
+<div class="product zero-stock "><img src="https://image.izettle.com/product/P4AMvlXVEem1m1EKmWY5Wg-Cge3XlrZEem-EJWUuh1XJg.jpeg"><h3>Czech Pilsener</h3><p class="price">2,00 €</p><p class="stock">0 Päckchen</p></div>
+<div class="product  "><img src="https://image.izettle.com/product/P4AMvlXVEem1m1EKmWY5Wg-FKPBTlrZEem52o-DUPmW1Q.jpeg"><h3>French Cider</h3><p class="price">2,00 €</p><p class="stock">13 Päckchen</p><span class="auslaufend">Artikel auslaufend</span></div>
+<div class="product  "><img src="https://image.izettle.com/product/P4AMvlXVEem1m1EKmWY5Wg-JQbzYlrZEemGNyOTZ1dCfQ.jpeg"><h3>Fruit Blanche</h3><p class="price">2,00 €</p><p class="stock">1 Päckchen</p><span class="auslaufend">Artikel auslaufend</span></div>
+<div class="product  "><img src="https://image.izettle.com/product/P4AMvlXVEem1m1EKmWY5Wg-LgqNylrZEem9kGvNr0RV4Q.jpeg"><h3>German Lager W35</h3><p class="price">2,00 €</p><p class="stock">9 Päckchen</p></div>
+<div class="product  "><img src="https://image.izettle.com/product/P4AMvlXVEem1m1EKmWY5Wg-R3vJQI5XEeu87xdFiUzZxA.png"><h3>Noble Saison</h3><p class="price">2,00 €</p><p class="stock">6 Päckchen</p><span class="auslaufend">Artikel auslaufend</span></div>
+<div class="product  "><img src="https://image.izettle.com/product/P4AMvlXVEem1m1EKmWY5Wg-Y6TyoFrYEemkK_QXc4p5EQ.jpeg"><h3>Notty</h3><p class="price">2,00 €</p><p class="stock">32 Päckchen</p></div>
+<div class="product zero-stock "><img src="https://image.izettle.com/product/P4AMvlXVEem1m1EKmWY5Wg-OwoaSlrZEemsLEbjGQaTyw.jpeg"><h3>Old German Altbier</h3><p class="price">2,00 €</p><p class="stock">0 Päckchen</p></div>
+<div class="product  "><img src="https://image.izettle.com/product/P4AMvlXVEem1m1EKmWY5Wg-1QD9qFreEemlMANMNEOpeA.jpeg"><h3>Original British Ale Yeast Withbread</h3><p class="price">2,00 €</p><p class="stock">8 Päckchen</p></div>
+<div class="product  "><img src="https://image.izettle.com/product/P4AMvlXVEem1m1EKmWY5Wg-R-e0bFrYEemtt0LL9hAXYg.jpeg"><h3>Pure Ale PAY7</h3><p class="price">2,00 €</p><p class="stock">1 Päckchen</p></div>
+<div class="product zero-stock "><img src="https://image.izettle.com/product/P4AMvlXVEem1m1EKmWY5Wg-732KcFreEemSZI9QRHayfg.jpeg"><h3>U.S. Westcoast Chico</h3><p class="price">2,00 €</p><p class="stock">0 Päckchen</p></div>
+<div class="product  "><img src="https://image.izettle.com/product/P4AMvlXVEem1m1EKmWY5Wg-X46hVlrUEemxg3uEqq8MGA.jpeg"><h3>W34/70</h3><p class="price">2,00 €</p><p class="stock">28 Päckchen</p></div></div>
+        <div id="Diverses" class="products"><div class="product zero-stock "><img src="https://image.izettle.com/product/M2Y4MDBjYmUtNTVkNS0xMWU5LWI1OWItNTEwYTk5NjYzOTVh-YTQ1MDM1OTAtMDBjNi0xMWYwLTkyNWItZTM0OWRiYjNhN2Qw.jpeg"><h3>6 Verkostungsgläser (nur nach Vorbestellung)</h3><p class="price">21,00 €</p><p class="stock">0 Stück</p></div>
+<div class="product  "><img src="https://image.izettle.com/product/M2Y4MDBjYmUtNTVkNS0xMWU5LWI1OWItNTEwYTk5NjYzOTVh-MjAyNDNlMTAtMGYwMy0xMWYwLTg3ZTktMmYzYjkzNmRkZDkw.jpeg"><h3>Reparatur-Kit 1 für NC-Keg</h3><p class="price">5,00 €</p><p class="stock">28 Stück</p></div></div>
+        <div id="Verpackung" class="products"><div class="product  "><img src="https://image.izettle.com/product/M2Y4MDBjYmUtNTVkNS0xMWU5LWI1OWItNTEwYTk5NjYzOTVh-MGE5ZTE0MDAtZTJkOC0xMWVmLWEwMjYtZTk0YzY3YmVlMDdi.jpeg"><h3>Papiertüte groß (10 kg)</h3><p class="price">1,00 €</p><p class="stock">49 Stück</p></div>
+<div class="product  "><img src="https://image.izettle.com/product/M2Y4MDBjYmUtNTVkNS0xMWU5LWI1OWItNTEwYTk5NjYzOTVh-Njk3ZWFjMTAtZTJkNy0xMWVmLThkMjgtYjE4OWU3MmQ3YmQ4.jpeg"><h3>Papiertüte klein (1,5 kg)</h3><p class="price">0,30 €</p><p class="stock">100 Stück</p></div>
+<div class="product  "><img src="https://image.izettle.com/product/M2Y4MDBjYmUtNTVkNS0xMWU5LWI1OWItNTEwYTk5NjYzOTVh-ZTUyMzMyZjAtZTJkNy0xMWVmLWEwMjYtZTk0YzY3YmVlMDdi.jpeg"><h3>Papiertüte mittel (3 kg)</h3><p class="price">0,60 €</p><p class="stock">199 Stück</p></div></div>
+
     </div>
 </body>
 </html>
