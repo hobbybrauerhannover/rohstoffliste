@@ -25,15 +25,10 @@
         z-index: 80;
     }
 
-    .header-content {
-        max-width: 1200px;
-        margin: 0 auto;
-        display: flex;
-        flex-direction: row;
-        align-items: center;
-        padding: 0 20px;
-        position: relative;
-        justify-content: flex-start;
+    @keyframes blink {
+        0% { opacity: 1; }
+        50% { opacity: 0.2; }
+        100% { opacity: 1; }
     }
 
     .logo {
@@ -99,11 +94,6 @@
     /* Vollständig versteckte Scrollbar */
     .grid::-webkit-scrollbar {
         display: none; /* Chrome, Safari und Opera */
-    }
-
-    /* Navigationspfeile */
-    .nav-arrow:hover {
-        background-color: #f0f0f0;
     }
 
     /* Navigationspunkte */
@@ -282,6 +272,10 @@
         margin: 15px 0 10px;
         font-weight: 500;
         text-align: center;
+        /* Verhindert Text-Überlauf bei langen Wörtern */
+        word-wrap: break-word;
+        overflow-wrap: break-word;
+        hyphens: auto;
     }
 
     .product p, .product-front p {
@@ -330,6 +324,90 @@
         font-weight: 700 !important;
         font-size: 16px !important;
         text-shadow: 0px 0px 3px rgba(255, 255, 255, 0.8);
+        position: relative;
+    }
+
+    .negative-stock .stock::before,
+    .negative-stock .stock::after {
+        content: "!";
+        color: #ff3b30;
+        font-weight: bold;
+        animation: blink 1.5s infinite;
+    }
+
+    .negative-stock .stock::before {
+        margin-right: 5px;
+    }
+
+    .negative-stock .stock::after {
+        margin-left: 5px;
+    }
+
+    /* Overlay für Begrüßungsnachricht */
+    #startup-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.85);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        z-index: 9999;
+        pointer-events: all;
+    }
+
+    .overlay-content {
+        background-color: white;
+        padding: 30px;
+        border-radius: 15px;
+        width: 80%;
+        max-width: 500px;
+        text-align: center;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+    }
+
+    .overlay-content h2 {
+        color: #06c;
+        margin-bottom: 20px;
+    }
+
+    .overlay-content p {
+        margin: 15px 0;
+        line-height: 1.5;
+    }
+
+    .overlay-content .hint {
+        background-color: #f5f5f7;
+        padding: 15px;
+        border-radius: 10px;
+        font-style: italic;
+        margin-top: 20px;
+    }
+
+    #countdown {
+        margin: 20px 0;
+        font-weight: bold;
+        color: #555;
+    }
+
+    #overlay-ok {
+        background-color: #06c;
+        color: white;
+        border: none;
+        padding: 10px 30px;
+        border-radius: 20px;
+        font-size: 16px;
+        font-weight: 500;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        margin-top: 10px;
+    }
+
+    #overlay-ok:hover {
+        background-color: #004d99;
+        transform: scale(1.05);
     }
 
     /* Responsive Design */
@@ -339,18 +417,138 @@
         }
 
         .product, .product-flip {
-            width: 200px;
-            height: 280px;
+            width: 180px;  /* Von 200px auf 180px reduziert */
+            height: 270px; /* Von 280px auf 270px reduziert */
         }
         
         .products.active {
-            grid-template-columns: repeat(auto-fill, 200px);
+            grid-template-columns: repeat(auto-fill, 180px); /* Von 200px auf 180px angepasst */
+        }
+
+        .product h3, .product-front h3 {
+            font-size: 15px;
+            margin: 10px 0 8px;
+            line-height: 1.3;
+        }
+        
+        .price, .stock {
+            font-size: 14px;
+        }
+        
+        .product-back .detail {
+            font-size: 14px;
+            margin: 8px 0;
+        }
+        
+        .overlay-content {
+            max-width: 90%;
+            padding: 20px;
         }
     }
     
     @media (max-width: 500px) {
+        .product h3, .product-front h3 {
+            font-size: 13px;
+            margin: 6px 0 5px;
+            line-height: 1.2;
+            max-height: 3.6em; /* Begrenzt den Text auf 3 Zeilen */
+            overflow: hidden;
+            display: -webkit-box;
+            -webkit-line-clamp: 3;
+            -webkit-box-orient: vertical;
+            text-overflow: ellipsis;
+        }
+
+        .negative-stock .stock::before,
+        .negative-stock .stock::after {
+            font-size: 14px;
+        }
+
+        .product, .product-flip {
+            width: 160px;  /* Schmaler für kleine Geräte */
+            height: 260px; /* Etwas flacher */
+            padding: 15px 10px; /* Seitliches Padding reduziert */
+        }
+        
         .products.active {
-            grid-template-columns: 200px;
+            grid-template-columns: repeat(2, 1fr); /* Immer 2 Spalten, egal wie breit */
+            gap: 10px; /* Reduziere den Abstand zwischen Karten auf kleinen Geräten */
+            padding: 0 5px; /* Weniger seitlichen Abstand */
+        }
+        
+        .price, .stock {
+            font-size: 13px;
+            margin: 3px 0; /* Kleinere Schrift für Preis und Bestand */
+        }
+        
+        /* Bildgröße anpassen */
+        .product img, .product-front img {
+            max-width: 100px;
+            max-height: 100px;
+        }
+        
+        /* Auslaufend-Badge kleiner machen */
+        .auslaufend {
+            font-size: 9px;
+            padding: 2px 5px;
+            top: 5px;
+            right: 5px;
+        }
+
+        @keyframes shine {
+            0% {
+                top: -100%;
+                left: -100%;
+                opacity: 0;
+            }
+            20% {
+                opacity: 1;
+            }
+            100% {
+                top: 100%;
+                left: 100%;
+                opacity: 0;
+            }
+            }
+
+            /* Änderungen für die Produktkarten */
+            .product-flip-inner {
+            width: 100%;
+            height: 100%;
+            position: relative;
+            transition: transform 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275); /* Federnde Animation */
+            transform-style: preserve-3d;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
+            border-radius: 18px;
+            }
+
+            /* Glanzeffekt für Vorder- und Rückseite */
+            .product-front::before, 
+            .product-back::before {
+            content: '';
+            position: absolute;
+            top: -100%;
+            left: -100%;
+            width: 300%;
+            height: 100%;
+            background: linear-gradient(
+                to right,
+                rgba(255, 255, 255, 0) 0%,
+                rgba(255, 255, 255, 0.1) 45%,
+                rgba(255, 255, 255, 0.5) 50%,
+                rgba(255, 255, 255, 0.1) 55%,
+                rgba(255, 255, 255, 0) 100%
+            );
+            transform: rotate(30deg);
+            transition: all 1s;
+            opacity: 0;
+            pointer-events: none;
+            }
+
+            /* Aktivierung des Glanzeffekts bei Drehung */
+            .product-flip.flipped .product-front::before,
+            .product-flip:not(.flipped) .product-back::before {
+            animation: shine 1.5s forwards;
         }
     }
     </style>
@@ -620,15 +818,66 @@
         initNavigation();
     };
 
+    // Overlay mit Timer und OK-Button
+    function handleOverlay() {
+        const overlay = document.getElementById('startup-overlay');
+        const okButton = document.getElementById('overlay-ok');
+        const timerElement = document.getElementById('timer');
+        
+        // Entferne das visited-Flag bei jedem Laden
+        localStorage.removeItem('visited');
+        
+        let timeLeft = 10;
+        
+        // Timer aktualisieren
+        const countdownInterval = setInterval(() => {
+            timeLeft--;
+            timerElement.textContent = timeLeft;
+            
+            if (timeLeft <= 0) {
+                clearInterval(countdownInterval);
+                okButton.style.display = 'inline-block';
+                document.getElementById('countdown').textContent = 'Du kannst jetzt fortfahren!';
+            }
+        }, 1000);
+        
+        // OK-Button-Handler
+        okButton.addEventListener('click', () => {
+            overlay.style.display = 'none';
+            localStorage.setItem('visited', 'true');
+        });
+    }
+
+    // Füge handleOverlay zum window.onload hinzu
+    const originalOnload = window.onload;
+    window.onload = function() {
+        if (typeof originalOnload === 'function') {
+            originalOnload();
+        }
+        
+        // Initialisiere den Overlay
+        handleOverlay();
+    };
     </script>
 </head>
 <body>
+    <div id="startup-overlay">
+        <div class="overlay-content">
+            <h2>Willkommen beim Rohstofflager</h2>
+            <p>Hier findest du den aktuellen Bestand des Rohstofflagers von Hobbybrauer Hannover e.V.</p>
+            <p>Diese Übersicht wird regelmäßig aktualisiert und zeigt dir live, was gerade verfügbar ist.</p>
+            <p class="hint">Tipp: Bei Malzkarten kannst du tippen, um Details zur Verteilung (Säcke/Tonne) zu sehen.</p>
+            <div id="countdown">Weiter in <span id="timer">10</span> Sekunden...</div>
+            <button id="overlay-ok" style="display: none;">Verstanden</button>
+        </div>
+    </div>
+
     <header>
         <div class="header-content">
             <img src="https://easyverein.com/app/image/full_17199194743824325.png" alt="Hobbybrauer Hannover Logo" class="logo">
             <div class="title-container">
                 <h1>Rohstofflager - Hobbybrauer Hannover e.V.</h1>
-                <p class="timestamp">Aktualisiert: 14.04.2025 16:12</p>
+                <p class="timestamp">Aktualisiert: 14.04.2025 20:49</p>
             </div>
         </div>
     </header>
