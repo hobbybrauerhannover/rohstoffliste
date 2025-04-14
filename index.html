@@ -19,11 +19,10 @@
         background-color: rgba(255, 255, 255, 0.8);
         backdrop-filter: blur(10px);
         -webkit-backdrop-filter: blur(10px);
-        position: sticky;
-        top: 0;
+        position: relative;
         padding: 15px 0;
         box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
-        z-index: 100;
+        z-index: 80;
     }
 
     .header-content {
@@ -63,17 +62,74 @@
         max-width: 1200px;
         margin: 0 auto;
         padding: 20px;
+        position: relative;
+    }
+
+    /* Nav-Wrapper für die Kategorienleiste mit Navigationspfeilen */
+    .nav-wrapper {
+        position: sticky;
+        top: 0;
+        background-color: #f5f5f7;
+        z-index: 90;
+        border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+        padding: 5px 0;
+    }
+
+    /* Container für Kategorien und Navigationspunkte */
+    .nav-container {
+        position: relative;
+        max-width: 1100px;
+        margin: 0 auto;
     }
 
     .grid {
         display: flex;
-        justify-content: center;
+        flex-wrap: nowrap;
+        overflow-x: auto;
         gap: 15px;
-        flex-wrap: wrap;
-        margin: 30px auto;
+        margin: 0;
+        padding: 5px; /* Hier von 5px 40px auf 5px reduzieren, da kein Platz für Pfeile mehr benötigt wird */
+        scrollbar-width: none; /* Firefox */
+        -webkit-overflow-scrolling: touch;
+        scroll-behavior: smooth;
+        white-space: nowrap;
+        justify-content: center;
+    }
+
+    /* Vollständig versteckte Scrollbar */
+    .grid::-webkit-scrollbar {
+        display: none; /* Chrome, Safari und Opera */
+    }
+
+    /* Navigationspfeile */
+    .nav-arrow:hover {
+        background-color: #f0f0f0;
+    }
+
+    /* Navigationspunkte */
+    .nav-dots {
+        display: flex;
+        justify-content: center;
+        margin-top: 5px;
+        gap: 5px;
+    }
+
+    .nav-dot {
+        width: 6px;
+        height: 6px;
+        border-radius: 50%;
+        background-color: #ccc;
+        cursor: pointer;
+        transition: all 0.2s ease;
+    }
+
+    .nav-dot.active {
+        background-color: #06c;
+        transform: scale(1.2);
     }
 
     .category {
+        flex: 0 0 auto; /* Verhindert, dass die Buttons schrumpfen */
         background-color: #fff;
         border: none;
         padding: 12px 24px;
@@ -84,6 +140,7 @@
         color: #1d1d1f;
         transition: all 0.3s ease;
         box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+        white-space: nowrap; /* Verhindert Umbruch des Textes */
     }
 
     .category:hover {
@@ -122,7 +179,7 @@
         display: grid;
         grid-template-columns: repeat(auto-fill, 250px);
         gap: 25px;
-        margin: 30px auto;
+        margin: 20px auto;
         padding: 0 20px;
         max-width: 1100px;
         justify-content: center;
@@ -278,9 +335,6 @@
     /* Responsive Design */
     @media (max-width: 768px) {
         .grid {
-            flex-direction: row;
-            overflow-x: auto;
-            padding: 10px 0;
             justify-content: flex-start;
         }
 
@@ -421,9 +475,12 @@
             }
         }
         
+        // Gesamtwert als Ganzzahl ohne Nachkommastellen anzeigen
+        const gesamtWertGanzzahl = Math.round(gesamtWert);
+        
         statsElement.innerHTML = '<p>Anzahl Artikel: ' + anzahlArtikel + 
                                 ' | Gesamtbestand: ' + bestandAnzeige + ' ' + einheit + 
-                                ' | Gesamtwert: ' + gesamtWert.toFixed(2) + ' €</p>';
+                                ' | Gesamtwert: ' + gesamtWertGanzzahl + ' €</p>';
     }
 
     // Funktion zum Umdrehen einer Karte
@@ -455,9 +512,102 @@
         
         // Berechne die Statistik für die ausgewählte Kategorie
         berechneStatistik(category);
+        
+        // Aktiven Navigationspunkt aktualisieren
+        updateActiveDot();
     }
     
-    // Erste Kategorie beim Laden automatisch aktivieren
+    // Navigationslogik
+    let currentPage = 0;
+    let totalPages = 0;
+    const itemsPerPage = 2; // Anzahl der sichtbaren Kategorien pro Seite (mind. 2)
+    
+    function initNavigation() {
+        const grid = document.querySelector('.grid');
+        const categories = document.querySelectorAll('.category');
+        const dotsContainer = document.querySelector('.nav-dots');
+        
+        // Berechne Anzahl der Seiten
+        totalPages = Math.ceil(categories.length / itemsPerPage);
+        
+        // Erstelle Navigationspunkte
+        dotsContainer.innerHTML = '';
+        for (let i = 0; i < totalPages; i++) {
+            const dot = document.createElement('div');
+            dot.className = 'nav-dot';
+            if (i === 0) dot.classList.add('active');
+            dot.addEventListener('click', () => navigateToPage(i));
+            dotsContainer.appendChild(dot);
+        }
+        
+        // Touch-Events für Wischgesten
+        let startX, endX;
+        grid.addEventListener('touchstart', (e) => {
+            startX = e.changedTouches[0].screenX;
+        });
+        
+        grid.addEventListener('touchend', (e) => {
+            endX = e.changedTouches[0].screenX;
+            if (startX - endX > 50) { // Nach links wischen
+                navigateNext();
+            } else if (endX - startX > 50) { // Nach rechts wischen
+                navigatePrev();
+            }
+        });
+    }
+    
+    function navigateToPage(page) {
+        if (page < 0 || page >= totalPages) return;
+        
+        currentPage = page;
+        const grid = document.querySelector('.grid');
+        const categories = document.querySelectorAll('.category');
+        const offset = categories[page * itemsPerPage]?.offsetLeft || 0;
+        
+        grid.scrollTo({
+            left: offset - 40, // Berücksichtige das Padding
+            behavior: 'smooth'
+        });
+        
+        updateActiveDot();
+    }
+    
+    function navigateNext() {
+        navigateToPage(currentPage + 1);
+    }
+    
+    function navigatePrev() {
+        navigateToPage(currentPage - 1);
+    }
+    
+    // Finde aktuelle Seite basierend auf der aktiven Kategorie
+    function updateActiveDot() {
+        const categories = document.querySelectorAll('.category');
+        let activeIndex = -1;
+        
+        // Finde den Index der aktiven Kategorie
+        categories.forEach((category, index) => {
+            if (category.classList.contains('active')) {
+                activeIndex = index;
+            }
+        });
+        
+        if (activeIndex >= 0) {
+            // Berechne die Seite, auf der sich die aktive Kategorie befindet
+            const activePage = Math.floor(activeIndex / itemsPerPage);
+            
+            // Aktualisiere aktiven Punkt
+            const dots = document.querySelectorAll('.nav-dot');
+            dots.forEach((dot, i) => {
+                dot.classList.toggle('active', i === activePage);
+            });
+            
+            // Aktualisiere aktuelle Seite
+            currentPage = activePage;
+        }
+    }
+    
+    // Erste Kategorie beim Laden automatisch aktivieren und Navigation initialisieren
     window.onload = function() {
         // Ermittle die erste verfügbare Kategorie
         const firstCategoryButton = document.querySelector('.category');
@@ -465,7 +615,11 @@
             const firstCategory = firstCategoryButton.textContent;
             toggleProducts(firstCategory);
         }
+        
+        // Initialisiere die Navigation
+        initNavigation();
     };
+
     </script>
 </head>
 <body>
@@ -474,19 +628,26 @@
             <img src="https://easyverein.com/app/image/full_17199194743824325.png" alt="Hobbybrauer Hannover Logo" class="logo">
             <div class="title-container">
                 <h1>Rohstofflager - Hobbybrauer Hannover e.V.</h1>
-                <p class="timestamp">Aktualisiert: 13.04.2025 21:43</p>
+                <p class="timestamp">Aktualisiert: 14.04.2025 16:12</p>
             </div>
         </div>
     </header>
 
     <div class="container">
-        <div class="grid">
+        <div class="nav-wrapper">
+            <div class="nav-container">
+                <div class="grid">
         <div class="category" onclick="toggleProducts('Malz')">Malz</div>
         <div class="category" onclick="toggleProducts('Hopfen')">Hopfen</div>
         <div class="category" onclick="toggleProducts('Hefe')">Hefe</div>
         <div class="category" onclick="toggleProducts('Diverses')">Diverses</div>
         <div class="category" onclick="toggleProducts('Verpackung')">Verpackung</div>
 
+                </div>
+                <div class="nav-dots">
+                    <!-- Wird dynamisch befüllt -->
+                </div>
+            </div>
         </div>
         
         <!-- Statistik-Container für jede Kategorie -->
@@ -518,7 +679,7 @@
     <div class="product-back">
       <h3>Aromamalz (260-300 EBC)</h3>
       <p class="detail">Säcke: 0 x 25 kg</p>
-      <p class="detail">Rest in Tonne: 16.4 kg</p>
+      <p class="detail">Tonne: 16.4 kg</p>
     </div>
   </div>
 </div>
@@ -532,7 +693,7 @@
     <div class="product-back">
       <h3>Chocolate (800-1000 EBC)</h3>
       <p class="detail">Säcke: 0 x 25 kg</p>
-      <p class="detail">Rest in Tonne: 15.2 kg</p>
+      <p class="detail">Tonne: 15.2 kg</p>
     </div>
   </div>
 </div>
@@ -546,7 +707,7 @@
     <div class="product-back">
       <h3>Karamell Ahorn (3-6 EBC)</h3>
       <p class="detail">Säcke: 0 x 25 kg</p>
-      <p class="detail">Rest in Tonne: 23.4 kg</p>
+      <p class="detail">Tonne: 23.4 kg</p>
     </div>
   </div>
 </div>
@@ -560,7 +721,7 @@
     <div class="product-back">
       <h3>Karamell Dunkel/Palisander (110-130 EBC)</h3>
       <p class="detail">Säcke: 0 x 25 kg</p>
-      <p class="detail">Rest in Tonne: 11.4 kg</p>
+      <p class="detail">Tonne: 11.4 kg</p>
     </div>
   </div>
 </div>
@@ -574,7 +735,7 @@
     <div class="product-back">
       <h3>Karamell Eiche (25-35 EBC)</h3>
       <p class="detail">Säcke: 0 x 25 kg</p>
-      <p class="detail">Rest in Tonne: 7.9 kg</p>
+      <p class="detail">Tonne: 7.9 kg</p>
     </div>
   </div>
 </div>
@@ -588,7 +749,7 @@
     <div class="product-back">
       <h3>Karamell Hell/Birke (10-15 EBC)</h3>
       <p class="detail">Säcke: 3 x 25 kg</p>
-      <p class="detail">Rest in Tonne: 22.6 kg</p>
+      <p class="detail">Tonne: 22.6 kg</p>
     </div>
   </div>
 </div>
@@ -602,7 +763,7 @@
     <div class="product-back">
       <h3>Karamell Medium / Mahagoni (55-65 EBC)</h3>
       <p class="detail">Säcke: 1 x 25 kg</p>
-      <p class="detail">Rest in Tonne: 0.7 kg</p>
+      <p class="detail">Tonne: 0.7 kg</p>
     </div>
   </div>
 </div>
@@ -616,7 +777,7 @@
     <div class="product-back">
       <h3>Mela Buche (80-90 EBC)</h3>
       <p class="detail">Säcke: 0 x 25 kg</p>
-      <p class="detail">Rest in Tonne: 20.0 kg</p>
+      <p class="detail">Tonne: 20.0 kg</p>
     </div>
   </div>
 </div>
@@ -630,7 +791,7 @@
     <div class="product-back">
       <h3>Mela Rot-Erle (40-50 EBC)</h3>
       <p class="detail">Säcke: 0 x 25 kg</p>
-      <p class="detail">Rest in Tonne: 18.6 kg</p>
+      <p class="detail">Tonne: 18.6 kg</p>
     </div>
   </div>
 </div>
@@ -644,7 +805,7 @@
     <div class="product-back">
       <h3>Münchner (18-22 EBC)</h3>
       <p class="detail">Säcke: 2 x 25 kg</p>
-      <p class="detail">Rest in Tonne: 18.7 kg</p>
+      <p class="detail">Tonne: 18.7 kg</p>
     </div>
   </div>
 </div>
@@ -658,7 +819,7 @@
     <div class="product-back">
       <h3>Oat Malt</h3>
       <p class="detail">Säcke: 1 x 25 kg</p>
-      <p class="detail">Rest in Tonne: 9.6 kg</p>
+      <p class="detail">Tonne: 9.6 kg</p>
     </div>
   </div>
 </div>
@@ -672,7 +833,7 @@
     <div class="product-back">
       <h3>Pale Ale (5-7 EBC)</h3>
       <p class="detail">Säcke: 22 x 25 kg</p>
-      <p class="detail">Rest in Tonne: 10.5 kg</p>
+      <p class="detail">Tonne: 10.5 kg</p>
     </div>
   </div>
 </div>
@@ -686,7 +847,7 @@
     <div class="product-back">
       <h3>Pilsner (3-5 EBC)</h3>
       <p class="detail">Säcke: 57 x 25 kg</p>
-      <p class="detail">Rest in Tonne: 17.7 kg</p>
+      <p class="detail">Tonne: 17.7 kg</p>
     </div>
   </div>
 </div>
@@ -700,7 +861,7 @@
     <div class="product-back">
       <h3>Rauchmalz (3-8 EBC)</h3>
       <p class="detail">Säcke: 0 x 25 kg</p>
-      <p class="detail">Rest in Tonne: 23.8 kg</p>
+      <p class="detail">Tonne: 23.8 kg</p>
     </div>
   </div>
 </div>
@@ -714,7 +875,7 @@
     <div class="product-back">
       <h3>Röstmalz (1300-1500 EBC)</h3>
       <p class="detail">Säcke: 0 x 25 kg</p>
-      <p class="detail">Rest in Tonne: 19.8 kg</p>
+      <p class="detail">Tonne: 19.8 kg</p>
     </div>
   </div>
 </div>
@@ -728,7 +889,7 @@
     <div class="product-back">
       <h3>Sauermalz (2-5 EBC)</h3>
       <p class="detail">Säcke: 0 x 25 kg</p>
-      <p class="detail">Rest in Tonne: 18.6 kg</p>
+      <p class="detail">Tonne: 18.6 kg</p>
     </div>
   </div>
 </div>
@@ -742,7 +903,7 @@
     <div class="product-back">
       <h3>Spitzmalz (2-5 EBC)</h3>
       <p class="detail">Säcke: 3 x 25 kg</p>
-      <p class="detail">Rest in Tonne: 19.5 kg</p>
+      <p class="detail">Tonne: 19.5 kg</p>
     </div>
   </div>
 </div>
@@ -756,7 +917,7 @@
     <div class="product-back">
       <h3>Weizen dunkel (14-18 EBC)</h3>
       <p class="detail">Säcke: 1 x 25 kg</p>
-      <p class="detail">Rest in Tonne: 17.8 kg</p>
+      <p class="detail">Tonne: 17.8 kg</p>
     </div>
   </div>
 </div>
@@ -770,7 +931,7 @@
     <div class="product-back">
       <h3>Weizen hell (3-5 EBC)</h3>
       <p class="detail">Säcke: 3 x 25 kg</p>
-      <p class="detail">Rest in Tonne: 5.3 kg</p>
+      <p class="detail">Tonne: 5.3 kg</p>
     </div>
   </div>
 </div>
@@ -784,7 +945,7 @@
     <div class="product-back">
       <h3>Wiener Malz (8-10 EBC)</h3>
       <p class="detail">Säcke: 14 x 25 kg</p>
-      <p class="detail">Rest in Tonne: 15.1 kg</p>
+      <p class="detail">Tonne: 15.1 kg</p>
     </div>
   </div>
 </div></div>
