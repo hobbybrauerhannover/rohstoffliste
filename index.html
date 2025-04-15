@@ -25,10 +25,38 @@
         z-index: 80;
     }
 
+    /* Animation Keyframes */
     @keyframes blink {
         0% { opacity: 1; }
         50% { opacity: 0.2; }
         100% { opacity: 1; }
+    }
+
+    @keyframes shine {
+        0% {
+            top: -100%;
+            left: -100%;
+            opacity: 0;
+        }
+        20% {
+            opacity: 1;
+        }
+        100% {
+            top: 100%;
+            left: 100%;
+            opacity: 0;
+        }
+    }
+
+    .header-content {
+        max-width: 1200px;
+        margin: 0 auto;
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        padding: 0 20px;
+        position: relative;
+        justify-content: flex-start;
     }
 
     .logo {
@@ -212,10 +240,40 @@
         width: 100%;
         height: 100%;
         position: relative;
-        transition: transform 0.6s;
+        transition: transform 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275); /* Federnde Animation */
         transform-style: preserve-3d;
         box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
         border-radius: 18px;
+    }
+
+    /* Glanzeffekt für Vorder- und Rückseite */
+    .product-front::before, 
+    .product-back::before {
+        content: '';
+        position: absolute;
+        top: -100%;
+        left: -100%;
+        width: 300%;
+        height: 100%;
+        background: linear-gradient(
+            to right,
+            rgba(255, 255, 255, 0) 0%,
+            rgba(255, 255, 255, 0.1) 45%,
+            rgba(255, 255, 255, 0.5) 50%,
+            rgba(255, 255, 255, 0.1) 55%,
+            rgba(255, 255, 255, 0) 100%
+        );
+        transform: rotate(30deg);
+        transition: all 1s;
+        opacity: 0;
+        pointer-events: none;
+    }
+
+    /* Aktivierung des Glanzeffekts bei Drehung */
+    .product-flip.flipped .product-front::before,
+    .product-flip:not(.flipped) .product-back::before,
+    .product-flip:not(.flipped) .product-front::before {
+        animation: shine 1.5s forwards;
     }
 
     .product-flip:hover .product-flip-inner {
@@ -444,6 +502,28 @@
             max-width: 90%;
             padding: 20px;
         }
+
+        .header-content {
+            flex-direction: row; /* Behalte die Zeile bei */
+            align-items: center;
+            padding: 10px;
+        }
+        
+        .logo {
+            height: 70px;
+            margin-right: 15px;
+            flex-shrink: 0; /* Verhindert, dass das Logo schrumpft */
+        }
+        
+        .title-container {
+            text-align: center;
+            margin-right: 0;
+            flex-grow: 1;
+        }
+        
+        h1 {
+            font-size: 1.2rem;
+        }
     }
     
     @media (max-width: 500px) {
@@ -495,64 +575,29 @@
             right: 5px;
         }
 
-        @keyframes shine {
-            0% {
-                top: -100%;
-                left: -100%;
-                opacity: 0;
-            }
-            20% {
-                opacity: 1;
-            }
-            100% {
-                top: 100%;
-                left: 100%;
-                opacity: 0;
-            }
-            }
+        .header-content {
+            padding: 5px;
+        }
+        
+        .logo {
+            height: 60px;
+            margin-right: 10px;
+        }
+        
+        h1 {
+            font-size: 0.9rem;
+        }
 
-            /* Änderungen für die Produktkarten */
-            .product-flip-inner {
-            width: 100%;
-            height: 100%;
-            position: relative;
-            transition: transform 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275); /* Federnde Animation */
-            transform-style: preserve-3d;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
-            border-radius: 18px;
-            }
-
-            /* Glanzeffekt für Vorder- und Rückseite */
-            .product-front::before, 
-            .product-back::before {
-            content: '';
-            position: absolute;
-            top: -100%;
-            left: -100%;
-            width: 300%;
-            height: 100%;
-            background: linear-gradient(
-                to right,
-                rgba(255, 255, 255, 0) 0%,
-                rgba(255, 255, 255, 0.1) 45%,
-                rgba(255, 255, 255, 0.5) 50%,
-                rgba(255, 255, 255, 0.1) 55%,
-                rgba(255, 255, 255, 0) 100%
-            );
-            transform: rotate(30deg);
-            transition: all 1s;
-            opacity: 0;
-            pointer-events: none;
-            }
-
-            /* Aktivierung des Glanzeffekts bei Drehung */
-            .product-flip.flipped .product-front::before,
-            .product-flip:not(.flipped) .product-back::before {
-            animation: shine 1.5s forwards;
+        .timestamp {
+           font-size: 0.8em;
         }
     }
     </style>
+
     <script>
+    // Verwende die Variable direkt aus dem Bash-Script:
+    const overlayCountdownTime = 1;
+
     // Produktdaten
     const produktDaten = [
         {kategorie:"Diverses", name:"6 Verkostungsgläser (nur nach Vorbestellung)", preis:"21,00 €", bild:"https://image.izettle.com/product/M2Y4MDBjYmUtNTVkNS0xMWU5LWI1OWItNTEwYTk5NjYzOTVh-YTQ1MDM1OTAtMDBjNi0xMWYwLTkyNWItZTM0OWRiYjNhN2Qw.jpeg", auslaufend:"", bestand:"0 Stück"},
@@ -682,8 +727,21 @@
     }
 
     // Funktion zum Umdrehen einer Karte
+    let activeCard = null; // Variable zum Speichern der aktiven Karte
+
     function flipCard(card) {
+        // Wenn bereits eine andere Karte aktiv ist und es nicht die aktuell geklickte ist
+        if (activeCard && activeCard !== card) {
+            // Die alte aktive Karte zurückdrehen
+            activeCard.classList.remove('flipped');
+        }
+        
+        // Diese Karte umdrehen
         card.classList.toggle('flipped');
+        
+        // Die Karte als aktiv speichern, wenn sie umgedreht ist, sonst null setzen
+        activeCard = card.classList.contains('flipped') ? card : null;
+        
         // Verhindern, dass das Ereignis zum Elternelement propagiert wird
         event.stopPropagation();
     }
@@ -703,6 +761,9 @@
         // Zeige die Produkte der ausgewählten Kategorie
         const productsContainer = document.getElementById(category);
         productsContainer.classList.add('active');
+        
+        // Scroll zum Anfang der Seite - Ändere diese Zeile:
+        window.scrollTo(0, 0);
         
         // Zeige die Statistiken für die ausgewählte Kategorie an
         document.querySelectorAll('.stats-container').forEach(div => div.style.display = 'none');
@@ -824,10 +885,11 @@
         const okButton = document.getElementById('overlay-ok');
         const timerElement = document.getElementById('timer');
         
-        // Entferne das visited-Flag bei jedem Laden
-        localStorage.removeItem('visited');
+        // Timer auf den Wert aus dem Bash-Script setzen
+        let timeLeft = overlayCountdownTime;
         
-        let timeLeft = 10;
+        // Initial den Timer setzen
+        timerElement.textContent = timeLeft;
         
         // Timer aktualisieren
         const countdownInterval = setInterval(() => {
@@ -844,7 +906,6 @@
         // OK-Button-Handler
         okButton.addEventListener('click', () => {
             overlay.style.display = 'none';
-            localStorage.setItem('visited', 'true');
         });
     }
 
@@ -877,7 +938,7 @@
             <img src="https://easyverein.com/app/image/full_17199194743824325.png" alt="Hobbybrauer Hannover Logo" class="logo">
             <div class="title-container">
                 <h1>Rohstofflager - Hobbybrauer Hannover e.V.</h1>
-                <p class="timestamp">Aktualisiert: 14.04.2025 20:49</p>
+                <p class="timestamp">Aktualisiert: 15.04.2025 11:16</p>
             </div>
         </div>
     </header>
