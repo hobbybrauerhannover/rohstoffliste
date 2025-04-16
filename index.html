@@ -4,7 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Rohstofflager</title>
-    <style>
+
+   <style>
     /* Grundlegende Stilisierung */
     body {
         font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
@@ -13,6 +14,7 @@
         padding: 0;
         background-color: #f5f5f7;
         color: #1d1d1f;
+        overflow-x: hidden; /* Verhindert horizontales Scrollen */
     }
 
     header {
@@ -267,13 +269,6 @@
         transition: all 1s;
         opacity: 0;
         pointer-events: none;
-    }
-
-    /* Aktivierung des Glanzeffekts bei Drehung */
-    .product-flip.flipped .product-front::before,
-    .product-flip:not(.flipped) .product-back::before,
-    .product-flip:not(.flipped) .product-front::before {
-        animation: shine 1.5s forwards;
     }
 
     .product-flip:hover .product-flip-inner {
@@ -596,7 +591,7 @@
 
     <script>
     // Verwende die Variable direkt aus dem Bash-Script:
-    const overlayCountdownTime = 1;
+    const overlayCountdownTime = 10;
 
     // Produktdaten
     const produktDaten = [
@@ -899,7 +894,7 @@
             if (timeLeft <= 0) {
                 clearInterval(countdownInterval);
                 okButton.style.display = 'inline-block';
-                document.getElementById('countdown').textContent = 'Du kannst jetzt fortfahren!';
+                document.getElementById('countdown').textContent = '';
             }
         }, 1000);
         
@@ -925,11 +920,11 @@
     <div id="startup-overlay">
         <div class="overlay-content">
             <h2>Willkommen beim Rohstofflager</h2>
-            <p>Hier findest du den aktuellen Bestand des Rohstofflagers von Hobbybrauer Hannover e.V.</p>
-            <p>Diese Übersicht wird regelmäßig aktualisiert und zeigt dir live, was gerade verfügbar ist.</p>
+            <p>Schön, dass du als Vereinsmitglied unsere Rohstofftabelle und das Lager nutzt. Diese Übersicht wird regelmäßig aktualisiert und zeigt dir live, was gerade verfügbar ist.</p>
+            <p>Bitte bedenke: Dieser und weitere Vorteile des Vereins sind nicht selbstverständlich – sie erfordern viel ehrenamtliche Arbeit in der Freizeit anderer. Überlege daher nicht nur, welchen Vorteil dir der Verein bringt, sondern auch, wie du unser Vereinsleben bereichern und unterstützen kannst.</p>
             <p class="hint">Tipp: Bei Malzkarten kannst du tippen, um Details zur Verteilung (Säcke/Tonne) zu sehen.</p>
             <div id="countdown">Weiter in <span id="timer">10</span> Sekunden...</div>
-            <button id="overlay-ok" style="display: none;">Verstanden</button>
+            <button id="overlay-ok" style="display: none;">Ich packe mit an!</button>
         </div>
     </div>
 
@@ -938,7 +933,7 @@
             <img src="https://easyverein.com/app/image/full_17199194743824325.png" alt="Hobbybrauer Hannover Logo" class="logo">
             <div class="title-container">
                 <h1>Rohstofflager - Hobbybrauer Hannover e.V.</h1>
-                <p class="timestamp">Aktualisiert: 15.04.2025 11:16</p>
+                <p class="timestamp">Aktualisiert: 16.04.2025 13:32</p>
             </div>
         </div>
     </header>
