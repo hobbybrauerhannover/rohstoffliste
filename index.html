@@ -781,20 +781,27 @@
         const categories = document.querySelectorAll('.category');
         const dotsContainer = document.querySelector('.nav-dots');
         
-        // Berechne Anzahl der Seiten
-        totalPages = Math.ceil(categories.length / itemsPerPage);
-        
-        // Erstelle Navigationspunkte
+        // Erstelle einen Navigationspunkt pro Kategorie statt pro Seite
         dotsContainer.innerHTML = '';
-        for (let i = 0; i < totalPages; i++) {
+        categories.forEach((category, index) => {
             const dot = document.createElement('div');
             dot.className = 'nav-dot';
-            if (i === 0) dot.classList.add('active');
-            dot.addEventListener('click', () => navigateToPage(i));
+            if (index === 0) dot.classList.add('active');
+            
+            // Navigiere zu der spezifischen Kategorie beim Klick
+            dot.addEventListener('click', () => {
+                // Extrahiere den Kategorienamen aus dem onclick-Attribut
+                const categoryName = category.getAttribute('onclick').match(/toggleProducts\('([^']+)'\)/)[1];
+                toggleProducts(categoryName);
+                
+                // Scrolle zum entsprechenden Kategorie-Button
+                category.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
+            });
+            
             dotsContainer.appendChild(dot);
-        }
+        });
         
-        // Touch-Events für Wischgesten
+        // Touch-Events für Wischgesten beibehalten
         let startX, endX;
         grid.addEventListener('touchstart', (e) => {
             startX = e.changedTouches[0].screenX;
@@ -827,15 +834,6 @@
     }
     
     function navigateNext() {
-        navigateToPage(currentPage + 1);
-    }
-    
-    function navigatePrev() {
-        navigateToPage(currentPage - 1);
-    }
-    
-    // Finde aktuelle Seite basierend auf der aktiven Kategorie
-    function updateActiveDot() {
         const categories = document.querySelectorAll('.category');
         let activeIndex = -1;
         
@@ -846,18 +844,56 @@
             }
         });
         
+        // Wechsle zur nächsten Kategorie, wenn möglich
+        if (activeIndex < categories.length - 1) {
+            const nextIndex = activeIndex + 1;
+            const nextCategory = categories[nextIndex];
+            const categoryName = nextCategory.getAttribute('onclick').match(/toggleProducts\('([^']+)'\)/)[1];
+            toggleProducts(categoryName);
+        }
+    }
+    
+    function navigatePrev() {
+        const categories = document.querySelectorAll('.category');
+        let activeIndex = -1;
+        
+        // Finde den Index der aktiven Kategorie
+        categories.forEach((category, index) => {
+            if (category.classList.contains('active')) {
+                activeIndex = index;
+            }
+        });
+        
+        // Wechsle zur vorherigen Kategorie, wenn möglich
+        if (activeIndex > 0) {
+            const prevIndex = activeIndex - 1;
+            const prevCategory = categories[prevIndex];
+            const categoryName = prevCategory.getAttribute('onclick').match(/toggleProducts\('([^']+)'\)/)[1];
+            toggleProducts(categoryName);
+        }
+    }
+    
+    // Aktualisiere die Funktion für den aktiven Navigationspunkt
+    function updateActiveDot() {
+        const categories = document.querySelectorAll('.category');
+        const dots = document.querySelectorAll('.nav-dot');
+        
+        // Finde den Index der aktiven Kategorie
+        let activeIndex = -1;
+        categories.forEach((category, index) => {
+            if (category.classList.contains('active')) {
+                activeIndex = index;
+            }
+        });
+        
         if (activeIndex >= 0) {
-            // Berechne die Seite, auf der sich die aktive Kategorie befindet
-            const activePage = Math.floor(activeIndex / itemsPerPage);
-            
-            // Aktualisiere aktiven Punkt
-            const dots = document.querySelectorAll('.nav-dot');
+            // Aktualisiere alle Dots, sodass nur der aktive Dot hervorgehoben ist
             dots.forEach((dot, i) => {
-                dot.classList.toggle('active', i === activePage);
+                dot.classList.toggle('active', i === activeIndex);
             });
             
-            // Aktualisiere aktuelle Seite
-            currentPage = activePage;
+            // Scrolle zum entsprechenden Kategorie-Button, wenn notwendig
+            categories[activeIndex].scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
         }
     }
     
@@ -933,7 +969,7 @@
             <img src="https://easyverein.com/app/image/full_17199194743824325.png" alt="Hobbybrauer Hannover Logo" class="logo">
             <div class="title-container">
                 <h1>Rohstofflager - Hobbybrauer Hannover e.V.</h1>
-                <p class="timestamp">Aktualisiert: 17.04.2025 15:00</p>
+                <p class="timestamp">Aktualisiert: 17.04.2025 15:57</p>
             </div>
         </div>
     </header>
