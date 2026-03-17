@@ -591,7 +591,7 @@
 
     <script>
     // Verwende die Variable direkt aus dem Bash-Script:
-    const overlayCountdownTime = 1;
+    const overlayCountdownTime = 10;
 
     // Produktdaten
     const produktDaten = [
@@ -713,8 +713,12 @@
             }
         }
         
+        // Gesamtwert als Ganzzahl ohne Nachkommastellen anzeigen
+        const gesamtWertGanzzahl = Math.round(gesamtWert);
+        
         statsElement.innerHTML = '<p>Anzahl Artikel: ' + anzahlArtikel + 
-                                ' | Gesamtbestand: ' + bestandAnzeige + ' ' + einheit + '</p>';
+                                ' | Gesamtbestand: ' + bestandAnzeige + ' ' + einheit + 
+                                ' | Gesamtwert: ' + gesamtWertGanzzahl + ' €</p>';
     }
 
     // Funktion zum Umdrehen einer Karte
@@ -965,7 +969,7 @@
             <img src="https://easyverein.com/app/image/full_17199194743824325.png" alt="Hobbybrauer Hannover Logo" class="logo">
             <div class="title-container">
                 <h1>Rohstofflager - Hobbybrauer Hannover e.V.</h1>
-                <p class="timestamp">Aktualisiert: 17.03.2026 09:57</p>
+                <p class="timestamp">Aktualisiert: 17.03.2026 10:00</p>
             </div>
         </div>
     </header>
